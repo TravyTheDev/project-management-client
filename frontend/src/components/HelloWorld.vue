@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import {onMounted, reactive, ref} from 'vue'
+import {onMounted, ref} from 'vue'
 import {GetUser, Login, Logout} from '../../wailsjs/go/main/App'
+import { EventsOn } from '../../wailsjs/runtime'
 
 type User = {
   id: number;
@@ -8,9 +9,14 @@ type User = {
   email: string;
 }
 
+type Message = {
+  message: string;
+}
+
 const user = ref<User>()
 const email = ref("")
 const password = ref("")
+const messageData = ref("")
 
 const login = async () => {
   await Login(email.value, password.value)
@@ -29,15 +35,19 @@ const getUser = async () => {
 
 onMounted(() => {
   getUser()
+  EventsOn("notification", (msg: Message) => {
+    messageData.value = msg.message
+  })
 })
 
 </script>
 
 <template>
   <main>
-    <div v-if="user">
+    <div v-if="user?.id">
       <p>Hello {{ user.username }}</p>
       <button @click="logout">LOGOUT</button>
+      <p v-if="messageData">{{ messageData }}</p>
     </div>
     <div v-else>
       <p>email:</p>

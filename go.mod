@@ -5,6 +5,7 @@ go 1.21
 toolchain go1.22.2
 
 require (
+	github.com/r3labs/sse/v2 v2.10.0
 	github.com/wailsapp/wails/v2 v2.9.1
 	modernc.org/sqlite v1.33.1
 )
@@ -41,6 +42,7 @@ require (
 	golang.org/x/net v0.25.0 // indirect
 	golang.org/x/sys v0.22.0 // indirect
 	golang.org/x/text v0.15.0 // indirect
+	gopkg.in/cenkalti/backoff.v1 v1.1.0 // indirect
 	modernc.org/gc/v3 v3.0.0-20240107210532-573471604cb6 // indirect
 	modernc.org/libc v1.55.3 // indirect
 	modernc.org/mathutil v1.6.0 // indirect

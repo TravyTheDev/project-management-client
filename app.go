@@ -9,6 +9,9 @@ import (
 	"net/http/cookiejar"
 	"net/url"
 	"project-management-client/cookie"
+
+	"github.com/r3labs/sse/v2"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
 var (
@@ -26,6 +29,10 @@ type User struct {
 	ID       int    `json:"id"`
 	Username string `json:"username"`
 	Email    string `json:"email"`
+}
+
+type Notification struct {
+	Message string `json:"message"`
 }
 
 // App struct
@@ -96,7 +103,7 @@ func (a *App) GetUser() *User {
 	if err := json.NewDecoder(res.Body).Decode(&data); err != nil {
 		fmt.Println(err)
 	}
-
+	go a.notify(data.ID)
 	return data
 }
 
@@ -149,4 +156,17 @@ func (a *App) getCookies() {
 		fmt.Println(err)
 	}
 	httpClient.Jar.SetCookies(cookieUrl, cookieSlice)
+}
+
+func (a *App) notify(id int) {
+	notification := &Notification{}
+	connectStr := fmt.Sprintf("http://localhost:8000/api/v1/notifications/stream/%d", id)
+
+	client := sse.NewClient(connectStr)
+	client.SubscribeRaw(func(msg *sse.Event) {
+		if err := json.Unmarshal(msg.Data, &notification); err != nil {
+			fmt.Println(err)
+		}
+		runtime.EventsEmit(a.ctx, "notification", notification)
+	})
 }
