@@ -1,0 +1,47 @@
+{
+    "main": {
+        "hello": "こんにちは",
+        "create": "ルームを作成してください。",
+        "login_or_register": "ログインそれでも登録してください。",
+        "rooms_display_info": "ルームは表示してない。",
+        "invite_info": "ルームから他人を招待してください。",
+        "display_invite_info": "オンラインじゃないと招待が見えない。",
+        "message_info": "後30秒でメッセージは自動的に消される。",
+        "room_info": "誰もいないときルームは後10秒で消される",
+        "create_button": "ルーム作成"
+    },
+    "auth": {
+        "username": "ユーザー名",
+        "password": "パスワード",
+        "confirm_password": "パスワード確認",
+        "email": "メール",
+        "register": "新規登録",
+        "login": "ログイン",
+        "email_numbers": "メールからの番号を入力してください。",
+        "forgot_password": "パスワードを忘れた場合",
+        "send_email": "送信"
+    },
+    "navbar": {
+        "home": "ホーム",
+        "dark_mode": "ダーク",
+        "light_mode": "ライト",
+        "logout": "ログアウト",
+        "login": "ログイン",
+        "register": "新規登録"
+    },
+    "invites": {
+        "invite_from": "招待人",
+        "join": "参加",
+        "message": "メッセージ",
+        "email": "メールアドレス"
+    },
+    "create_room": {
+        "room_name": "ルーム名",
+        "create": "ルーム作成"
+    },
+    "chats": {
+        "current_room": "ルーム",
+        "invite": "招待",
+        "send": "送信"
+    }
+}

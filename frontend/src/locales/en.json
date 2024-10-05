@@ -1,0 +1,47 @@
+{
+    "main": {
+        "hello": "Hello",
+        "create": "Create a room to get started.",
+        "login_or_register": "Login or register to get started.",
+        "rooms_display_info": "Rooms are not displayed.",
+        "invite_info": "Invite others from the room.",
+        "display_invite_info": "They must be online to see the invitation.",
+        "message_info": "Messages auto delete after 30 seconds.",
+        "room_info": "Rooms delete after 10 seconds if no one is in them.",
+        "create_button": "create room"
+    },
+    "auth": {
+        "username": "username",
+        "password": "password",
+        "confirm_password": "confirm password",
+        "email": "email",
+        "register": "register",
+        "login": "login",
+        "email_numbers": "Enter the numbers from the email.",
+        "forgot_password": "forgot your password?",
+        "send_email": "send"
+    },
+    "navbar": {
+        "home": "home",
+        "dark_mode": "dark",
+        "light_mode": "light",
+        "logout": "logout",
+        "login": "login",
+        "register": "register"
+    },
+    "invites": {
+        "invite_from": "invite from",
+        "join": "join",
+        "message": "message",
+        "email": "email"
+    },
+    "create_room": {
+        "room_name": "room name",
+        "create": "create room"
+    },
+    "chats": {
+        "current_room": "current room",
+        "invite": "invite",
+        "send": "send"
+    }
+}
