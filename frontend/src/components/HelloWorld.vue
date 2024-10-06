@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import {onMounted, ref} from 'vue'
 import {GetUser, Login, Logout} from '../../wailsjs/go/main/App'
-import { EventsOn } from '../../wailsjs/runtime'
 
 type User = {
   id: number;
@@ -9,14 +8,9 @@ type User = {
   email: string;
 }
 
-type Message = {
-  message: string;
-}
-
 const user = ref<User>()
 const email = ref("")
 const password = ref("")
-const messageData = ref("")
 
 const login = async () => {
   await Login(email.value, password.value)
@@ -35,9 +29,6 @@ const getUser = async () => {
 
 onMounted(() => {
   getUser()
-  EventsOn("notification", (msg: Message) => {
-    messageData.value = msg.message
-  })
 })
 
 </script>
@@ -47,7 +38,6 @@ onMounted(() => {
     <div v-if="user?.id">
       <p>Hello {{ user.username }}</p>
       <button @click="logout">LOGOUT</button>
-      <p v-if="messageData">{{ messageData }}</p>
     </div>
     <div v-else>
       <p>email:</p>
@@ -60,46 +50,4 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.result {
-  height: 20px;
-  line-height: 20px;
-  margin: 1.5rem auto;
-}
-
-.input-box .btn {
-  width: 60px;
-  height: 30px;
-  line-height: 30px;
-  border-radius: 3px;
-  border: none;
-  margin: 0 0 0 20px;
-  padding: 0 8px;
-  cursor: pointer;
-}
-
-.input-box .btn:hover {
-  background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
-  color: #333333;
-}
-
-.input-box .input {
-  border: none;
-  border-radius: 3px;
-  outline: none;
-  height: 30px;
-  line-height: 30px;
-  padding: 0 10px;
-  background-color: rgba(240, 240, 240, 1);
-  -webkit-font-smoothing: antialiased;
-}
-
-.input-box .input:hover {
-  border: none;
-  background-color: rgba(255, 255, 255, 1);
-}
-
-.input-box .input:focus {
-  border: none;
-  background-color: rgba(255, 255, 255, 1);
-}
 </style>

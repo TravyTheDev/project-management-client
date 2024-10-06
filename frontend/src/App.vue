@@ -1,8 +1,13 @@
 <script lang="ts" setup>
-import HelloWorld from './components/HelloWorld.vue'</script>
+import { RouterView } from 'vue-router';
+import Layout from './components/Layout.vue'
+import Main from './pages/Main.vue';
+</script>
 
 <template>
-  <HelloWorld/>
+  <Layout class="bg-backgroundColor h-[100vh] text-fontColor">
+    <RouterView />
+  </Layout>
 </template>
 
 <style>

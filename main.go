@@ -25,6 +25,7 @@ func main() {
 	cookieStore := cookie.NewCookieStore(db)
 	// Create an instance of the app structure
 	app := NewApp(cookieStore)
+	projectsHandler := NewProjectsHandler()
 
 	// Create application with options
 	err = wails.Run(&options.App{
@@ -38,6 +39,7 @@ func main() {
 		OnStartup:        app.startup,
 		Bind: []interface{}{
 			app,
+			projectsHandler,
 		},
 	})
 

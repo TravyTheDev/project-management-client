@@ -1,5 +1,6 @@
 import {createApp} from 'vue'
 import App from './App.vue'
+import router from './router'
 import './style.css';
 import jp from "./locales/jp.json" 
 import en from "./locales/en.json" 
@@ -14,4 +15,4 @@ const i18n = createI18n({
     legacy: false 
   })
 
-createApp(App).use(i18n).mount('#app')
+createApp(App).use(router).use(i18n).mount('#app')

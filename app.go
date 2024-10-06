@@ -9,7 +9,6 @@ import (
 	"net/http/cookiejar"
 	"net/url"
 	"project-management-client/cookie"
-	"time"
 
 	"github.com/r3labs/sse/v2"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -41,21 +40,6 @@ type User struct {
 
 type Notification struct {
 	Message string `json:"message"`
-}
-
-type Project struct {
-	ID          int       `json:"id"`
-	ParentID    int       `json:"parentID"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	Status      int       `json:"status"`
-	AssigneeID  int       `json:"assigneeID"`
-	Urgency     int       `json:"urgency"`
-	Notes       string    `json:"notes"`
-	StartDate   string    `json:"startDate"`
-	EndDate     string    `json:"endDate"`
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
 }
 
 // App struct
