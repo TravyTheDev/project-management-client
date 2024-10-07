@@ -1,27 +1,34 @@
 <template>
     <div>
-        <div v-for="project in projects">
-            <p>{{ project.title }}</p>
-            <p>{{ project.description }}</p>
+        <div v-for="project in projectsData">
+            <div @click="viewProject(project.id)">
+                <p>{{ project.title }}</p>
+                <p>{{ project.description }}</p>
+            </div>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { GetAllProjects } from '../../wailsjs/go/main/ProjectsHandler';
-import { main } from '../../wailsjs/go/models';
+import { GetAllProjects } from '../../wailsjs/go/projects/ProjectsHandler';
+import { projects } from '../../wailsjs/go/models';
+import router from '../router';
 
-const projects = ref<main.Project[]>([])
+const projectsData = ref<projects.Project[]>([])
 
 const getProjects = async () => {
    const res = await GetAllProjects()
-   projects.value = res
+   projectsData.value = res
 }
 
 onMounted(() => {
     getProjects()
 })
+
+const viewProject = (id: number) => {
+    router.push(`/project/${id}`)
+}
 
 </script>
 

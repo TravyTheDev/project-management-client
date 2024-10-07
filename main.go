@@ -5,6 +5,7 @@ import (
 	"embed"
 	"log"
 	"project-management-client/cookie"
+	"project-management-client/projects"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -25,7 +26,9 @@ func main() {
 	cookieStore := cookie.NewCookieStore(db)
 	// Create an instance of the app structure
 	app := NewApp(cookieStore)
-	projectsHandler := NewProjectsHandler()
+
+	projectsStore := projects.NewProjectsStore(db)
+	projectsHandler := projects.NewProjectsHandler(projectsStore)
 
 	// Create application with options
 	err = wails.Run(&options.App{

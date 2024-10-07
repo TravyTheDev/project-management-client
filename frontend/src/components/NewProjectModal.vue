@@ -8,16 +8,14 @@
                 <input v-model="project.title" type="text">
                 <p>Description</p>
                 <textarea v-model="project.description"></textarea>
-                <p>Status</p>
-                <input v-model="project.status" type="number">
                 <p>Assignee</p>
                 <input v-model="project.assigneeID" type="number">
                 <p>Urgency</p>
                 <input v-model="project.urgency" type="number">
                 <p>Start</p>
-                <input v-model="project.startDate" type="datetime">
+                <input v-model="project.startDate" type="datetime-local">
                 <p>End</p>
-                <input v-model="project.endDate" type="datetime">
+                <input v-model="project.endDate" type="datetime-local">
                 <button @click="createProject">Create project</button>
             </div>
         </div>
@@ -26,12 +24,15 @@
 
 <script setup lang="ts">
 import { reactive } from 'vue';
-import { CreateProject } from '../../wailsjs/go/main/ProjectsHandler';
-import { main } from '../../wailsjs/go/models';
+import { CreateProject } from '../../wailsjs/go/projects/ProjectsHandler';
+import { projects } from '../../wailsjs/go/models';
+import { useRouter } from 'vue-router';
+
+const router = useRouter()
 
 const emit = defineEmits(['close-modal'])
 
-const project: main.ProjectReq = reactive({
+const project: projects.ProjectReq = reactive({
     parentID: 0,
     title: "",
     description: "",
@@ -45,10 +46,14 @@ const project: main.ProjectReq = reactive({
 
 const createProject = async () => {
    await CreateProject(project)
-   window.location.href = "/"
+   router.push(`/`)
 }
 </script>
 
 <style scoped>
+
+input, textarea {
+    border: 1px solid black;
+}
 
 </style>

@@ -1,5 +1,26 @@
 export namespace main {
 	
+	export class User {
+	    id: number;
+	    username: string;
+	    email: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new User(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
+	        this.username = source["username"];
+	        this.email = source["email"];
+	    }
+	}
+
+}
+
+export namespace projects {
+	
 	export class Project {
 	    id: number;
 	    parentID: number;
@@ -80,6 +101,18 @@ export namespace main {
 	        this.notes = source["notes"];
 	        this.startDate = source["startDate"];
 	        this.endDate = source["endDate"];
+	    }
+	}
+	export class SearchReq {
+	    text: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new SearchReq(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.text = source["text"];
 	    }
 	}
 	export class User {
