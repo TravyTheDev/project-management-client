@@ -8,10 +8,12 @@ export function CreateProject(arg1:projects.ProjectReq):Promise<void>;
 
 export function EditPersonalNotes(arg1:number,arg2:string):Promise<void>;
 
+export function EditProject(arg1:projects.Project):Promise<void>;
+
 export function GetAllProjects():Promise<Array<projects.Project>>;
 
 export function GetNotesByProjectID(arg1:number):Promise<string>;
 
-export function GetProjectByID(arg1:string):Promise<projects.Project>;
+export function GetProjectByID(arg1:string):Promise<projects.ProjectRes>;
 
 export function SearchProjectAssignee(arg1:projects.SearchReq):Promise<Array<projects.User>>;

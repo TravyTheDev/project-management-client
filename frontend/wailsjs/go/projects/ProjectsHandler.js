@@ -14,6 +14,10 @@ export function EditPersonalNotes(arg1, arg2) {
   return window['go']['projects']['ProjectsHandler']['EditPersonalNotes'](arg1, arg2);
 }
 
+export function EditProject(arg1) {
+  return window['go']['projects']['ProjectsHandler']['EditProject'](arg1);
+}
+
 export function GetAllProjects() {
   return window['go']['projects']['ProjectsHandler']['GetAllProjects']();
 }

@@ -53,6 +53,11 @@ type ProjectReq struct {
 	EndDate     string `json:"endDate"`
 }
 
+type ProjectRes struct {
+	Project *Project `json:"project"`
+	User    *User    `json:"user"`
+}
+
 func NewProjectsHandler(projectsStore *ProjectsStore) *ProjectsHandler {
 	return &ProjectsHandler{
 		projectsStore: projectsStore,
@@ -99,8 +104,8 @@ func (p *ProjectsHandler) CreateProject(project ProjectReq) {
 	}
 }
 
-func (p *ProjectsHandler) GetProjectByID(id string) *Project {
-	var project *Project
+func (p *ProjectsHandler) GetProjectByID(id string) *ProjectRes {
+	var project *ProjectRes
 	str := fmt.Sprintf("http://localhost:8000/api/v1/projects/project/%s", id)
 
 	resp, err := http.Get(str)
@@ -144,7 +149,28 @@ func (p *ProjectsHandler) SearchProjectAssignee(search SearchReq) []*User {
 	}
 	defer resp.Body.Close()
 	if err := json.NewDecoder(resp.Body).Decode(&users); err != nil {
-		fmt.Println("THERE", err)
+		return nil
 	}
 	return users
+}
+
+func (p *ProjectsHandler) EditProject(project Project) {
+	encodeBody, err := json.Marshal(project)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	req, err := http.NewRequest("PUT", "http://localhost:8000/api/v1/projects/update_project", bytes.NewReader(encodeBody))
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer resp.Body.Close()
 }
