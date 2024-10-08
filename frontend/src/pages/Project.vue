@@ -3,23 +3,51 @@
         <div>
             <ProjectSkeleton v-if="isLoading" />
             <div class="flex flex-col gap-1 items-start" v-else-if="project">
-                <input v-if="isEdit" v-model="project.title" type="text">
-                <h1 v-else>{{ project.title }}</h1>
-                <input v-if="isEdit" v-model="project.description" type="text">
-                <h3 v-else>{{ project.description }}</h3>
-                <select v-model="project.status" :disabled="!isEdit">
-                    <option v-for="todo in todoStatus" :value="todo.value">{{ todo.label }}</option>
-                </select>
-                <input v-if="isEdit" v-model="searchText" type="text">
-                <div v-if="users && isEdit">
-                    <div v-for="user in users">
-                        {{ user.username }}
-                    </div>
+                <p>Title:</p>
+                <textarea class="text-2xl font-semibold w-full" rows="4" v-if="isEdit"
+                    v-model="project.title"></textarea>
+                <h1 class="text-2xl font-semibold mb-24" v-else>{{ project.title }}</h1>
+
+                <p>Description:</p>
+                <textarea class="w-full" rows="3" v-if="isEdit" v-model="project.description"></textarea>
+                <h3 class="mb-12" v-else>{{ project.description }}</h3>
+
+                <div class="flex gap-1 mt-4">
+                    <p>Status:</p>
+                    <select v-model="project.status" :disabled="!isEdit">
+                        <option v-for="todo in todoStatus" :value="todo.value">{{ todo.label }}</option>
+                    </select>
+                    <p>Urgency:</p>
+                    <select v-model="project.urgency" :disabled="!isEdit">
+                        <option v-for="status in urgencyStatus" :value="status.value">{{ status.label }}</option>
+                    </select>
                 </div>
-                <p v-else-if="!isEdit">{{ projectUser?.username }}</p>
-                <select v-model="project.urgency" :disabled="!isEdit">
-                    <option v-for="status in urgencyStatus" :value="status.value">{{ status.label }}</option>
-                </select>
+
+                <div class="relative">
+                    <p>Assignee:</p>
+                    <input v-if="isEdit" v-model="searchText" type="text">
+                    <div v-if="users && isEdit && !isSetAssignee">
+                        <div class="absolute bg-white z-10 mt-1">
+                            <div @click="setAssignee(user)"
+                                class="w-52 truncate border border-black divide-y hover:cursor-pointer hover:bg-slate-300"
+                                v-for="user in users">
+                                {{ user.username }}
+                            </div>
+                        </div>
+                    </div>
+                    <p v-else-if="!isEdit">{{ projectUser?.username }}</p>
+                </div>
+
+                <div class="flex gap-1 mt-4">
+                    <p>Start date:</p>
+                    <input v-if="isEdit" v-model="project.startDate" type="date">
+                    <p v-else>{{ project.startDate }}</p>
+                    <p>End date:</p>
+                    <input v-if="isEdit" v-model="project.endDate" type="date">
+                    <p v-else>{{ project.endDate }}</p>
+                </div>
+
+                <p>Notes:</p>
                 <textarea v-if="isEdit" v-model="project.notes"></textarea>
                 <p v-else>{{ project.notes }}</p>
             </div>
@@ -29,6 +57,7 @@
             </div>
         </div>
         <div>
+            <p>Personal notes:</p>
             <div v-if="isEditPersonalNotes">
                 <textarea v-model="newPersonalNotes"></textarea>
                 <button @click="createOrEditPersonalNotes">save</button>
@@ -65,6 +94,7 @@ const isEditPersonalNotes = ref(false)
 const isLoading = ref(false)
 const searchText = ref("")
 const isEdit = ref(false)
+const isSetAssignee = ref(false)
 
 const getProject = async () => {
     isLoading.value = true
@@ -72,6 +102,7 @@ const getProject = async () => {
     projectRes.value = res
     project.value = res.project
     projectUser.value = res.user
+    searchText.value = projectUser.value?.username ?? ''
     isLoading.value = false
 }
 
@@ -124,6 +155,10 @@ watch(personalNotes, () => {
 })
 
 const handleSearch = (value: string) => {
+    if (value === projectUser.value?.username) {
+        return
+    }
+    isSetAssignee.value = false
     const timeoutID: number = window.setTimeout(() => { }, 0)
 
     for (let id: number = timeoutID; id >= 0; id -= 1) {
@@ -164,10 +199,27 @@ const saveEdit = async () => {
     }
 }
 
+const setAssignee = (user: projects.User) => {
+    if (project.value) {
+        project.value.assigneeID = user.id
+        searchText.value = user.username
+        projectUser.value = user
+        isSetAssignee.value = true
+    }
+    if (users.value) {
+        users.value.length = 0
+    }
+}
+
 </script>
 
 <style scoped>
 input {
     border: 1px solid black;
+}
+
+textarea,
+input {
+    color: black;
 }
 </style>
