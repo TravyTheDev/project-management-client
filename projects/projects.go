@@ -174,3 +174,17 @@ func (p *ProjectsHandler) EditProject(project Project) {
 	}
 	defer resp.Body.Close()
 }
+
+func (p *ProjectsHandler) GetChildProjectsByParentID(id int) []*Project {
+	var projects []*Project
+	str := fmt.Sprintf("http://localhost:8000/api/v1/projects/child_projects/%v", id)
+
+	resp, err := http.Get(str)
+	if err != nil {
+		fmt.Println(err)
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&projects); err != nil {
+		fmt.Println(err)
+	}
+	return projects
+}

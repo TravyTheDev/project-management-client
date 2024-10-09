@@ -1,12 +1,12 @@
 <template>
-    <div>
-        <div>
+    <div class="overflow-hidden grid grid-cols-4 whitespace-pre-line">
+        <div class="col-span-3">
             <ProjectSkeleton v-if="isLoading" />
-            <div class="flex flex-col gap-1 items-start" v-else-if="project">
+            <div class="flex flex-col gap-1 items-start overflow-y-scroll h-[87vh] pb-2" v-else-if="project">
                 <p>Title:</p>
-                <textarea class="text-2xl font-semibold w-full" rows="4" v-if="isEdit"
+                <textarea class="text-xl font-semibold w-full" rows="3" v-if="isEdit"
                     v-model="project.title"></textarea>
-                <h1 class="text-2xl font-semibold mb-24" v-else>{{ project.title }}</h1>
+                <h1 class="text-xl font-semibold mb-14" v-else>{{ project.title }}</h1>
 
                 <p>Description:</p>
                 <textarea class="w-full" rows="3" v-if="isEdit" v-model="project.description"></textarea>
@@ -14,11 +14,11 @@
 
                 <div class="flex gap-1 mt-4">
                     <p>Status:</p>
-                    <select v-model="project.status" :disabled="!isEdit">
+                    <select class="text-black" v-model="project.status" :disabled="!isEdit">
                         <option v-for="todo in todoStatus" :value="todo.value">{{ todo.label }}</option>
                     </select>
                     <p>Urgency:</p>
-                    <select v-model="project.urgency" :disabled="!isEdit">
+                    <select class="text-black" v-model="project.urgency" :disabled="!isEdit">
                         <option v-for="status in urgencyStatus" :value="status.value">{{ status.label }}</option>
                     </select>
                 </div>
@@ -50,22 +50,34 @@
                 <p>Notes:</p>
                 <textarea v-if="isEdit" v-model="project.notes"></textarea>
                 <p v-else>{{ project.notes }}</p>
-            </div>
-            <div>
-                <button v-if="!isEdit" @click="toggleIsEdit">EDIT</button>
-                <button v-else @click="saveEdit">SAVE</button>
+                <div>
+                    <button v-if="!isEdit" @click="toggleIsEdit">EDIT</button>
+                    <button v-else @click="saveEdit">SAVE</button>
+                </div>
+                <div>
+                    <p>Personal notes:</p>
+                    <div v-if="isEditPersonalNotes">
+                        <textarea v-model="newPersonalNotes"></textarea>
+                        <button @click="createOrEditPersonalNotes">save</button>
+                        <button @click="toggleIsEditPersonalNotes">cancel</button>
+                    </div>
+                    <div v-else>
+                        <p class="whitespace-pre-line">{{ newPersonalNotes }}</p>
+                        <button @click="toggleIsEditPersonalNotes">edit</button>
+                    </div>
+                </div>
             </div>
         </div>
-        <div>
-            <p>Personal notes:</p>
-            <div v-if="isEditPersonalNotes">
-                <textarea v-model="newPersonalNotes"></textarea>
-                <button @click="createOrEditPersonalNotes">save</button>
-                <button @click="toggleIsEditPersonalNotes">cancel</button>
-            </div>
-            <div v-else>
-                <p class="whitespace-pre-line">{{ newPersonalNotes }}</p>
-                <button @click="toggleIsEditPersonalNotes">edit</button>
+        <div v-if="childProjects?.length" class="border-l-2 px-1 h-[87vh] pb-2 overflow-y-auto">
+            <div v-for="child in childProjects">
+                <div @click="goToChild(child.id)" class="hover:cursor-pointer">
+                    <p>Title:</p>
+                    <p class="font-semibold">{{ child.title }}</p>
+                    <p>Status:</p>
+                    <p>{{ todoStatus[child.status].label }}</p>
+                    <p>Urgency:</p>
+                    <p>{{ urgencyStatus[child.urgency].label }}</p>
+                </div>
             </div>
         </div>
     </div>
@@ -75,7 +87,7 @@
 import { onMounted, ref, watch } from 'vue';
 import { projects } from '../../wailsjs/go/models';
 import { useRouter, useRoute } from 'vue-router';
-import { CreateNotes, EditPersonalNotes, EditProject, GetNotesByProjectID, GetProjectByID, SearchProjectAssignee } from '../../wailsjs/go/projects/ProjectsHandler';
+import { CreateNotes, EditPersonalNotes, EditProject, GetChildProjectsByParentID, GetNotesByProjectID, GetProjectByID, SearchProjectAssignee } from '../../wailsjs/go/projects/ProjectsHandler';
 import ProjectSkeleton from '../components/ProjectSkeleton.vue';
 import { todoStatus, urgencyStatus } from '../consts';
 
@@ -95,6 +107,7 @@ const isLoading = ref(false)
 const searchText = ref("")
 const isEdit = ref(false)
 const isSetAssignee = ref(false)
+const childProjects = ref<projects.Project[]>()
 
 const getProject = async () => {
     isLoading.value = true
@@ -106,8 +119,18 @@ const getProject = async () => {
     isLoading.value = false
 }
 
+const getChildProjects = async () => {
+    const res = await GetChildProjectsByParentID(Number(id))
+    childProjects.value = res
+}
+
+const goToChild = (id: number) => {
+    router.push(`/project/${id}`)
+}
+
 onMounted(() => {
     getProject()
+    getChildProjects()
 })
 
 const toggleIsEditPersonalNotes = () => {

@@ -1,5 +1,5 @@
 <template>
-    <div class="text-fontColor">
+    <div class="text-fontColor ml-2">
         <div class="hover:cursor-pointer">
             <h3 @click="setActive('/')">Projects</h3>
             <div class="ml-2" v-if="active == '/'">

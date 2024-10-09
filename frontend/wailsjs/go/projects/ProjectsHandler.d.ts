@@ -12,6 +12,8 @@ export function EditProject(arg1:projects.Project):Promise<void>;
 
 export function GetAllProjects():Promise<Array<projects.Project>>;
 
+export function GetChildProjectsByParentID(arg1:number):Promise<Array<projects.Project>>;
+
 export function GetNotesByProjectID(arg1:number):Promise<string>;
 
 export function GetProjectByID(arg1:string):Promise<projects.ProjectRes>;

@@ -22,6 +22,10 @@ export function GetAllProjects() {
   return window['go']['projects']['ProjectsHandler']['GetAllProjects']();
 }
 
+export function GetChildProjectsByParentID(arg1) {
+  return window['go']['projects']['ProjectsHandler']['GetChildProjectsByParentID'](arg1);
+}
+
 export function GetNotesByProjectID(arg1) {
   return window['go']['projects']['ProjectsHandler']['GetNotesByProjectID'](arg1);
 }

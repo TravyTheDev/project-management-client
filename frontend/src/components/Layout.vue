@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="overflow-hidden">
         <Navbar />
         <div class="grid grid-cols-6">
             <div class="col-span-1">
