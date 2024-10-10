@@ -5,11 +5,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/cookiejar"
 	"net/url"
+	"os"
+	"os/signal"
 	"project-management-client/cookie"
+	"time"
 
+	"github.com/gorilla/websocket"
 	"github.com/r3labs/sse/v2"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
@@ -42,10 +47,16 @@ type Notification struct {
 	Message string `json:"message"`
 }
 
+type SocketMessage struct {
+	UserID  string `json:"id"`
+	Message string `json:"message"`
+}
+
 // App struct
 type App struct {
 	ctx         context.Context
 	cookieStore *cookie.CookieStore
+	conn        *websocket.Conn
 }
 
 // NewApp creates a new App application struct
@@ -89,7 +100,6 @@ func (a *App) Login(email string, password string) {
 
 	httpClient.Jar.SetCookies(cookieUrl, resp.Cookies())
 	a.cookieStore.SaveCookies(resp.Cookies())
-
 }
 
 func (a *App) GetUser() *User {
@@ -176,4 +186,67 @@ func (a *App) notify(id int) {
 		}
 		runtime.EventsEmit(a.ctx, "notification", notification)
 	})
+}
+
+func (a *App) JoinWebSocketRoom(roomID int, userID int, username string) {
+	msg := make(chan SocketMessage)
+	msgData := &SocketMessage{}
+
+	interrupt := make(chan os.Signal, 1)
+	signal.Notify(interrupt, os.Interrupt)
+
+	connectStr := fmt.Sprintf("ws://localhost:8000/api/v1/ws/%d/%d/%s", roomID, userID, username)
+	c, _, err := websocket.DefaultDialer.Dial(connectStr, nil)
+	if err != nil {
+		fmt.Println("DAIL:", err)
+	}
+	a.conn = c
+	defer c.Close()
+
+	done := make(chan struct{})
+
+	go func() {
+		defer close(done)
+		for {
+			_, message, err := a.conn.ReadMessage()
+			if err != nil {
+				log.Println("READ:", err)
+			}
+			if err := json.Unmarshal(message, &msgData); err != nil {
+				fmt.Println(err)
+			}
+			runtime.EventsEmit(a.ctx, "websocket", msgData)
+		}
+	}()
+
+	for {
+		select {
+		case <-done:
+			return
+		case m := <-msg:
+			err := a.conn.WriteJSON(m)
+			if err != nil {
+				log.Println("WRITE:", err)
+				return
+			}
+		case <-interrupt:
+			log.Println("interrupt")
+			//no leaving message
+			select {
+			case <-done:
+			case <-time.After(time.Second):
+			}
+			return
+		}
+	}
+}
+
+func (a *App) WriteSocketMessage(message SocketMessage) {
+	msg, err := json.Marshal(message)
+	if err != nil {
+		fmt.Println(err)
+	}
+	if err := a.conn.WriteMessage(websocket.TextMessage, msg); err != nil {
+		fmt.Println(err)
+	}
 }

@@ -6,10 +6,18 @@ export function GetUser() {
   return window['go']['main']['App']['GetUser']();
 }
 
+export function JoinWebSocketRoom(arg1, arg2, arg3) {
+  return window['go']['main']['App']['JoinWebSocketRoom'](arg1, arg2, arg3);
+}
+
 export function Login(arg1, arg2) {
   return window['go']['main']['App']['Login'](arg1, arg2);
 }
 
 export function Logout() {
   return window['go']['main']['App']['Logout']();
+}
+
+export function WriteSocketMessage(arg1) {
+  return window['go']['main']['App']['WriteSocketMessage'](arg1);
 }

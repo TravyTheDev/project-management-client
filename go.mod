@@ -5,6 +5,7 @@ go 1.21
 toolchain go1.22.2
 
 require (
+	github.com/gorilla/websocket v1.5.3
 	github.com/r3labs/sse/v2 v2.10.0
 	github.com/wailsapp/wails/v2 v2.9.1
 	modernc.org/sqlite v1.33.1

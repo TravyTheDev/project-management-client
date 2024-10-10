@@ -4,6 +4,10 @@ import {main} from '../models';
 
 export function GetUser():Promise<main.User>;
 
+export function JoinWebSocketRoom(arg1:number,arg2:number,arg3:string):Promise<void>;
+
 export function Login(arg1:string,arg2:string):Promise<void>;
 
 export function Logout():Promise<void>;
+
+export function WriteSocketMessage(arg1:main.SocketMessage):Promise<void>;

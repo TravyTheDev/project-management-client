@@ -1,5 +1,19 @@
 export namespace main {
 	
+	export class SocketMessage {
+	    id: string;
+	    message: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new SocketMessage(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
+	        this.message = source["message"];
+	    }
+	}
 	export class User {
 	    id: number;
 	    username: string;

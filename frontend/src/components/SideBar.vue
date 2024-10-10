@@ -1,8 +1,8 @@
 <template>
     <div class="text-fontColor ml-2">
         <div class="hover:cursor-pointer">
-            <h3 @click="setActive('/')">Projects</h3>
-            <div class="ml-2" v-if="active == '/'">
+            <h3 @click="setActive('/main')">Projects</h3>
+            <div class="ml-2" v-if="active == '/main'">
                 <h4>todo</h4>
                 <h4>in progress</h4>
                 <h4>done</h4>

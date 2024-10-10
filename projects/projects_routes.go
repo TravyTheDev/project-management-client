@@ -77,19 +77,9 @@ func (p *ProjectsHandler) GetAllProjects() []*Project {
 }
 
 func (p *ProjectsHandler) CreateProject(project ProjectReq) {
-	layout := "2006-01-02 15:04:05"
-	projectStart, err := time.Parse(layout, project.StartDate)
-	if err != nil {
-		fmt.Println(err)
+	if project.Title == "" {
 		return
 	}
-	projectEnd, err := time.Parse(layout, project.EndDate)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	project.StartDate = projectStart.String()
-	project.EndDate = projectEnd.String()
 	encodeBody, err := json.Marshal(project)
 	if err != nil {
 		fmt.Println(err)

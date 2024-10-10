@@ -3,75 +3,86 @@
         <div class="col-span-3">
             <ProjectSkeleton v-if="isLoading" />
             <div class="flex flex-col gap-1 items-start overflow-y-scroll h-[87vh] pb-2" v-else-if="project">
-                <p>Title:</p>
-                <textarea class="text-xl font-semibold w-full" rows="3" v-if="isEdit"
-                    v-model="project.title"></textarea>
-                <h1 class="text-xl font-semibold mb-14" v-else>{{ project.title }}</h1>
+                <div class="flex flex-col gap-1">
+                    <div class="relative">
+                        <span class="whitespace-pre">Assignee: </span>
+                        <input v-if="isEdit" v-model="searchText" type="text">
+                        <div v-if="users && isEdit && !isSetAssignee">
+                            <div class="absolute ml-[70.84px] bg-white z-10 mt-1">
+                                <div @click="setAssignee(user)"
+                                    class="w-48 px-2 truncate border border-black divide-y hover:cursor-pointer hover:bg-slate-300"
+                                    v-for="user in users">
+                                    {{ user.username }}
+                                </div>
+                            </div>
+                        </div>
+                        <span v-else-if="!isEdit">{{ projectUser?.username }}</span>
+                    </div>
+                    <div class="flex gap-1 items-center">
+                        <p>Start date:</p>
+                        <input v-if="isEdit" v-model="project.startDate" type="date">
+                        <p v-else>{{ project.startDate }}</p>
+                        <p>End date:</p>
+                        <input v-if="isEdit" v-model="project.endDate" type="date">
+                        <p v-else>{{ project.endDate }}</p>
+                    </div>
 
-                <p>Description:</p>
-                <textarea class="w-full" rows="3" v-if="isEdit" v-model="project.description"></textarea>
-                <h3 class="mb-12" v-else>{{ project.description }}</h3>
-
-                <div class="flex gap-1 mt-4">
-                    <p>Status:</p>
-                    <select class="text-black" v-model="project.status" :disabled="!isEdit">
-                        <option v-for="todo in todoStatus" :value="todo.value">{{ todo.label }}</option>
-                    </select>
-                    <p>Urgency:</p>
-                    <select class="text-black" v-model="project.urgency" :disabled="!isEdit">
-                        <option v-for="status in urgencyStatus" :value="status.value">{{ status.label }}</option>
-                    </select>
-                </div>
-
-                <div class="relative">
-                    <p>Assignee:</p>
-                    <input v-if="isEdit" v-model="searchText" type="text">
-                    <div v-if="users && isEdit && !isSetAssignee">
-                        <div class="absolute bg-white z-10 mt-1">
-                            <div @click="setAssignee(user)"
-                                class="w-52 truncate border border-black divide-y hover:cursor-pointer hover:bg-slate-300"
-                                v-for="user in users">
-                                {{ user.username }}
+                    <div class="flex gap-1 items-center">
+                        <p>Status:</p>
+                        <select class="text-black" v-model="project.status" :disabled="!isEdit">
+                            <option v-for="todo in todoStatus" :value="todo.value">{{ todo.label }}</option>
+                        </select>
+                        <p>Urgency:</p>
+                        <select class="text-black" v-model="project.urgency" :disabled="!isEdit">
+                            <option v-for="status in urgencyStatus" :value="status.value">{{ status.label }}</option>
+                        </select>
+                        <div>
+                            <button class="border px-2 py-1" v-if="!isEdit" @click="toggleIsEdit">EDIT</button>
+                            <div v-else>
+                                <button class="border px-2 py-1" @click="saveEdit">SAVE</button>
+                                <button class="border px-2 py-1 ml-2" @click="toggleIsEdit">CANCEL</button>
                             </div>
                         </div>
                     </div>
-                    <p v-else-if="!isEdit">{{ projectUser?.username }}</p>
                 </div>
 
-                <div class="flex gap-1 mt-4">
-                    <p>Start date:</p>
-                    <input v-if="isEdit" v-model="project.startDate" type="date">
-                    <p v-else>{{ project.startDate }}</p>
-                    <p>End date:</p>
-                    <input v-if="isEdit" v-model="project.endDate" type="date">
-                    <p v-else>{{ project.endDate }}</p>
+                <div>
+                    <button @click="toggeNewProjectModal" class="border px-2 py-1">Add subtask</button>
                 </div>
+                <textarea @input="resize(ref(titleTextArea))" ref="titleTextArea" class="text-xl font-semibold w-full"
+                    rows="1" v-if="isEdit" v-model="project.title"></textarea>
+                <h1 class="text-xl font-semibold" v-else>{{ project.title }}</h1>
+
+                <p>Description:</p>
+                <textarea @input="resize(ref(descriptionTextArea))" class="w-full" ref="descriptionTextArea" rows="1"
+                    v-if="isEdit" v-model="project.description"></textarea>
+                <h3 v-else>{{ project.description }}</h3>
 
                 <p>Notes:</p>
-                <textarea v-if="isEdit" v-model="project.notes"></textarea>
+                <textarea class="w-full" rows="1" @input="resize(ref(notesTextArea))" ref="notesTextArea" v-if="isEdit"
+                    v-model="project.notes"></textarea>
                 <p v-else>{{ project.notes }}</p>
-                <div>
-                    <button v-if="!isEdit" @click="toggleIsEdit">EDIT</button>
-                    <button v-else @click="saveEdit">SAVE</button>
-                </div>
-                <div>
+
+                <div class="w-full border-t-2 mt-2">
                     <p>Personal notes:</p>
                     <div v-if="isEditPersonalNotes">
-                        <textarea v-model="newPersonalNotes"></textarea>
-                        <button @click="createOrEditPersonalNotes">save</button>
-                        <button @click="toggleIsEditPersonalNotes">cancel</button>
+                        <textarea class="w-full" rows="1" @input="resize(ref(personalNotesRef))" ref="personalNotesRef"
+                            v-model="newPersonalNotes"></textarea>
+                        <div>
+                            <button class="border px-2 py-1" @click="createOrEditPersonalNotes">SAVE</button>
+                            <button class="border px-2 py-1 ml-2" @click="toggleIsEditPersonalNotes">CANCEL</button>
+                        </div>
                     </div>
                     <div v-else>
                         <p class="whitespace-pre-line">{{ newPersonalNotes }}</p>
-                        <button @click="toggleIsEditPersonalNotes">edit</button>
+                        <button class="border px-2 py-1" @click="toggleIsEditPersonalNotes">EDIT</button>
                     </div>
                 </div>
             </div>
         </div>
-        <div v-if="childProjects?.length" class="border-l-2 px-1 h-[87vh] pb-2 overflow-y-auto">
+        <div v-if="childProjects?.length" class="border-l-2 px-1 h-[87vh] pb-2 overflow-y-auto divide-y">
             <div v-for="child in childProjects">
                 <div @click="goToChild(child.id)" class="hover:cursor-pointer">
-                    <p>Title:</p>
                     <p class="font-semibold">{{ child.title }}</p>
                     <p>Status:</p>
                     <p>{{ todoStatus[child.status].label }}</p>
@@ -80,16 +91,19 @@
                 </div>
             </div>
         </div>
+        <NewProjectModal v-if="isShowNewProjectModal" :parent="project" :parent-i-d="id"
+            @close-modal="toggeNewProjectModal" @load-children="getChildProjects" />
     </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { nextTick, onMounted, Ref, ref, watch } from 'vue';
 import { projects } from '../../wailsjs/go/models';
 import { useRouter, useRoute } from 'vue-router';
 import { CreateNotes, EditPersonalNotes, EditProject, GetChildProjectsByParentID, GetNotesByProjectID, GetProjectByID, SearchProjectAssignee } from '../../wailsjs/go/projects/ProjectsHandler';
 import ProjectSkeleton from '../components/ProjectSkeleton.vue';
 import { todoStatus, urgencyStatus } from '../consts';
+import NewProjectModal from '../components/NewProjectModal.vue';
 
 const router = useRouter()
 const route = useRoute()
@@ -108,6 +122,11 @@ const searchText = ref("")
 const isEdit = ref(false)
 const isSetAssignee = ref(false)
 const childProjects = ref<projects.Project[]>()
+const titleTextArea = ref()
+const descriptionTextArea = ref()
+const notesTextArea = ref()
+const personalNotesRef = ref()
+const isShowNewProjectModal = ref(false)
 
 const getProject = async () => {
     isLoading.value = true
@@ -117,6 +136,10 @@ const getProject = async () => {
     projectUser.value = res.user
     searchText.value = projectUser.value?.username ?? ''
     isLoading.value = false
+}
+
+const toggeNewProjectModal = () => {
+    isShowNewProjectModal.value = !isShowNewProjectModal.value
 }
 
 const getChildProjects = async () => {
@@ -135,6 +158,9 @@ onMounted(() => {
 
 const toggleIsEditPersonalNotes = () => {
     isEditPersonalNotes.value = !isEditPersonalNotes.value
+    nextTick(() => {
+        resize(personalNotesRef)
+    })
 }
 
 const createPersonalNotes = () => {
@@ -212,6 +238,11 @@ watch(searchText, () => {
 
 const toggleIsEdit = () => {
     isEdit.value = !isEdit.value
+    nextTick(() => {
+        resize(titleTextArea)
+        resize(descriptionTextArea)
+        resize(notesTextArea)
+    })
 }
 
 const saveEdit = async () => {
@@ -234,6 +265,20 @@ const setAssignee = (user: projects.User) => {
     }
 }
 
+const resize = (refName: Ref) => {
+    refName.value.style.height = 'auto'
+    if (refName.value.scrollHeight < 104) {
+        refName.value.style.height = refName.value.scrollHeight + 'px'
+    } else {
+        refName.value.style.height = '6.5rem'
+    }
+    if (refName.value.scrollHeight > 40) {
+        refName.value.classList.add('expanded-text')
+    } else {
+        refName.value.classList.remove('expanded-text')
+    }
+}
+
 </script>
 
 <style scoped>
@@ -244,5 +289,9 @@ input {
 textarea,
 input {
     color: black;
+}
+
+.expanded-text {
+    overflow-y: auto;
 }
 </style>

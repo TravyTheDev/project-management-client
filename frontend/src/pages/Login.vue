@@ -1,5 +1,5 @@
 <template>
-    <div class="h-screen flex flex-col text-fontColor">
+    <div class="h-screen flex flex-col items-center text-fontColor">
         <div class="m-auto">
             <div>
                 <p>{{t('auth.email')}}: </p>
@@ -13,17 +13,18 @@
                 {{t('auth.login')}}
             </button>
             <br />
-            <!-- <RouterLink to="/forgot_password" class="underline">{{t('auth.forgot_password')}}</RouterLink> -->
             <p class="text-sm text-red-500 whitespace-pre-line" v-if="isShowError">{{ errorValue }}</p>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { nextTick, ref } from 'vue';
 import { Login } from '../../wailsjs/go/main/App';
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router';
 
+const router = useRouter()
 const {t} = useI18n()
 
 const email = ref('')
@@ -32,8 +33,16 @@ const errorValue = ref('')
 const isShowError = ref(false)
 
 const login = async () => {
-  await Login(email.value, password.value)
-  window.location.reload()
+    try {
+        await Login(email.value, password.value)
+        nextTick(() => {
+            window.location.href = "/#/main"
+        })
+    } catch (error:any) {
+        isShowError.value = true
+        errorValue.value = error        
+    }
+  
 }
 </script>
 
