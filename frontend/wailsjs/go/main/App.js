@@ -18,6 +18,10 @@ export function Logout() {
   return window['go']['main']['App']['Logout']();
 }
 
+export function SendNotification(arg1, arg2) {
+  return window['go']['main']['App']['SendNotification'](arg1, arg2);
+}
+
 export function WriteSocketMessage(arg1) {
   return window['go']['main']['App']['WriteSocketMessage'](arg1);
 }

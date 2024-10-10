@@ -79,7 +79,8 @@ func (a *App) startup(ctx context.Context) {
 }
 
 // Greet returns a greeting for the given name
-func (a *App) Login(email string, password string) {
+func (a *App) Login(email string, password string) int {
+	var id int
 	reqBody := LoginReq{
 		Email:    email,
 		Password: password,
@@ -97,9 +98,12 @@ func (a *App) Login(email string, password string) {
 		fmt.Println(err)
 	}
 	defer resp.Body.Close()
-
+	if err := json.NewDecoder(resp.Body).Decode(&id); err != nil {
+		return 0
+	}
 	httpClient.Jar.SetCookies(cookieUrl, resp.Cookies())
 	a.cookieStore.SaveCookies(resp.Cookies())
+	return id
 }
 
 func (a *App) GetUser() *User {
@@ -127,65 +131,6 @@ func (a *App) GetUser() *User {
 func (a *App) Logout() {
 	a.cookieStore.DeleteCookies()
 	httpClient.Jar.SetCookies(cookieUrl, nil)
-}
-
-func (a *App) renewCookie() {
-	if err := a.cookieStore.DeleteAuthCookie(); err != nil {
-		fmt.Println(err)
-	}
-	req, err := http.NewRequest("POST", "http://localhost:8000/api/v1/renew_token", nil)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	res, err := httpClient.Do(req)
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer res.Body.Close()
-	if err := a.cookieStore.SaveCookies(res.Cookies()); err != nil {
-		fmt.Println(err)
-	}
-	httpClient.Jar.SetCookies(cookieUrl, res.Cookies())
-}
-
-func (a *App) getMeRequest() *http.Response {
-	if retries == 0 {
-		return nil
-	}
-	a.getCookies()
-	req, err := http.NewRequest("GET", "http://localhost:8000/api/v1/me", nil)
-	if err != nil {
-		fmt.Println(err)
-	}
-	req.Header.Add("Content-Type", "application/json")
-
-	res, err := httpClient.Do(req)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return res
-}
-
-func (a *App) getCookies() {
-	cookieSlice, err := a.cookieStore.GetCookies()
-	if err != nil {
-		fmt.Println(err)
-	}
-	httpClient.Jar.SetCookies(cookieUrl, cookieSlice)
-}
-
-func (a *App) notify(id int) {
-	notification := &Notification{}
-	connectStr := fmt.Sprintf("http://localhost:8000/api/v1/notifications/stream/%d", id)
-
-	client := sse.NewClient(connectStr)
-	client.SubscribeRaw(func(msg *sse.Event) {
-		if err := json.Unmarshal(msg.Data, &notification); err != nil {
-			fmt.Println(err)
-		}
-		runtime.EventsEmit(a.ctx, "notification", notification)
-	})
 }
 
 func (a *App) JoinWebSocketRoom(roomID int, userID int, username string) {
@@ -249,4 +194,84 @@ func (a *App) WriteSocketMessage(message SocketMessage) {
 	if err := a.conn.WriteMessage(websocket.TextMessage, msg); err != nil {
 		fmt.Println(err)
 	}
+}
+
+func (a *App) SendNotification(id int, notfication Notification) {
+	var notification Notification
+	fmt.Println("SEND", notfication, id)
+	encodeBody, err := json.Marshal(notification)
+	if err != nil {
+		fmt.Println(err)
+	}
+	connectStr := fmt.Sprintf("http://localhost:8000/api/v1/notifications/send/%d", id)
+	_, err = http.Post(
+		connectStr,
+		"Content-Type: application/json",
+		bytes.NewReader(encodeBody),
+	)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// defer resp.Body.Close()
+}
+
+func (a *App) renewCookie() {
+	if err := a.cookieStore.DeleteAuthCookie(); err != nil {
+		fmt.Println(err)
+	}
+	req, err := http.NewRequest("POST", "http://localhost:8000/api/v1/renew_token", nil)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	res, err := httpClient.Do(req)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer res.Body.Close()
+	if err := a.cookieStore.SaveCookies(res.Cookies()); err != nil {
+		fmt.Println(err)
+	}
+	httpClient.Jar.SetCookies(cookieUrl, res.Cookies())
+}
+
+func (a *App) getMeRequest() *http.Response {
+	if retries == 0 {
+		return nil
+	}
+	a.getCookies()
+	req, err := http.NewRequest("GET", "http://localhost:8000/api/v1/me", nil)
+	if err != nil {
+		fmt.Println(err)
+	}
+	req.Header.Add("Content-Type", "application/json")
+
+	res, err := httpClient.Do(req)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return res
+}
+
+func (a *App) getCookies() {
+	cookieSlice, err := a.cookieStore.GetCookies()
+	if err != nil {
+		fmt.Println(err)
+	}
+	httpClient.Jar.SetCookies(cookieUrl, cookieSlice)
+}
+
+func (a *App) notify(id int) {
+	fmt.Println(id)
+	notification := &Notification{}
+	connectStr := fmt.Sprintf("http://localhost:8000/api/v1/notifications/stream/%d", id)
+
+	client := sse.NewClient(connectStr)
+	client.SubscribeRaw(func(msg *sse.Event) {
+		if err := json.Unmarshal(msg.Data, &notification); err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println("receive", notification)
+		runtime.EventsEmit(a.ctx, "notification", notification)
+	})
 }

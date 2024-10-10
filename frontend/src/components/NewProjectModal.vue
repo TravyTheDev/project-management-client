@@ -64,7 +64,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, Ref, watch } from 'vue';
+import { inject, reactive, ref, Ref, watch } from 'vue';
 import { CreateProject, SearchProjectAssignee } from '../../wailsjs/go/projects/ProjectsHandler';
 import { projects } from '../../wailsjs/go/models';
 import { useRouter } from 'vue-router';
@@ -78,7 +78,9 @@ interface props {
 const props = defineProps<props>()
 
 const router = useRouter()
-console.log(props.parentID)
+
+//TODO ASSIGN SELF
+const loginUser = inject<Ref<projects.User | undefined>>("loginUser")
 
 const emit = defineEmits(['close-modal', 'load-children'])
 const titleTextArea = ref()

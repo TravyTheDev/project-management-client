@@ -13,6 +13,7 @@
             </div>
             <div class="flex flex-row justify-around gap-1">
                 <div>
+                    <span>{{ messageData }}</span>
                     <span>Search:</span>
                     <input class="border" type="text" name="" id="">
                 </div>
@@ -39,10 +40,10 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, ref, watch } from 'vue';
+import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { languages } from '../consts';
 import { useI18n } from 'vue-i18n';
-import { EventsOn } from '../../wailsjs/runtime/runtime';
+import { EventsOff, EventsOn } from '../../wailsjs/runtime/runtime';
 import { useRouter } from 'vue-router';
 import NewProjectModal from './NewProjectModal.vue';
 import { Logout } from '../../wailsjs/go/main/App';
@@ -82,7 +83,12 @@ const goBack = () => {
 onMounted(() => {
   EventsOn("notification", (msg: Message) => {
     messageData.value = msg.message
+    console.log(msg)
   })
+})
+
+onUnmounted(() => {
+    EventsOff("notification")
 })
 
 watch(selectedLanguage, () => {
@@ -104,7 +110,7 @@ const logout = async () => {
     await Logout()
     emit('hide-layout')
     nextTick(() => {
-        window.location.href = "/#/login"
+        router.push('/login')
     })
 }
 </script>

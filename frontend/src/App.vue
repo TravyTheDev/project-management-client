@@ -32,13 +32,11 @@ document.body.classList.add(colorTheme.value)
 onMounted(() => {
   getUser()
 })
-const getItemKey = (item: any) => item;
+// const getItemKey = (item: any) => item;
 </script>
 
 <template>
-  <Layout :key="getItemKey(loginUser)" class="bg-backgroundColor h-[100vh] text-fontColor">
-    <RouterView :key="route.path" />
-  </Layout>
+  <RouterView :key="route.path" class="bg-backgroundColor h-[100vh] text-fontColor" />
 </template>
 
 <style>

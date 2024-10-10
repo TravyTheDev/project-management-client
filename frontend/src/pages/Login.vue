@@ -34,10 +34,15 @@ const isShowError = ref(false)
 
 const login = async () => {
     try {
-        await Login(email.value, password.value)
-        nextTick(() => {
-            window.location.href = "/#/main"
-        })
+       const res = await Login(email.value, password.value)
+       if (res && res!== 0){
+           nextTick(() => {
+               window.location.href = '/#/main'
+           })
+       }else {
+        isShowError.value = true
+        errorValue.value = "invalid email or password"
+       }
     } catch (error:any) {
         isShowError.value = true
         errorValue.value = error        

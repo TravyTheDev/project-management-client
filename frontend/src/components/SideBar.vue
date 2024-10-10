@@ -19,7 +19,7 @@ import { useRouter } from 'vue-router';
 const router = useRouter()
 
 
-const active = ref("/")
+const active = ref("/main")
 
 const setActive = (val:string) => {
     active.value = val
