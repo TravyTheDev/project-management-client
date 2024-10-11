@@ -1,6 +1,7 @@
 export namespace main {
 	
 	export class Notification {
+	    id: number;
 	    message: string;
 	
 	    static createFrom(source: any = {}) {
@@ -9,6 +10,7 @@ export namespace main {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
 	        this.message = source["message"];
 	    }
 	}

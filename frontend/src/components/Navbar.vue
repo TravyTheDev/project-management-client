@@ -1,6 +1,7 @@
 <template>
     <div>
-        <div class="flex py-4 mx-2 justify-between items-center">
+        <div class="flex py-4 mx-2 justify-between items-center relative">
+            <span v-if="isShowNotifications" @click="closeNotifications" class="absolute top-0 right-0 left-0 h-[100vh] w-[100vw]"></span>
             <div class="flex gap-2">
                 <div @click="goBack" class="flex flex-col border hover:cursor-pointer w-20 items-center">
                     <span>Back</span>
@@ -12,8 +13,15 @@
                 </div>
             </div>
             <div class="flex flex-row justify-around gap-1">
+                <div v-if="messageData.length" class="relative">
+                    <span @click="showNotifications" class="hover:cursor-pointer bg-red-500 rounded-full text-white px-1 text-sm">{{ messageData.length }}</span>
+                    <div @click.stop class="absolute w-44 z-10 bg-white max-h-40 overflow-y-auto translate-x-4" v-if="isShowNotifications">
+                        <div class="border" v-for="message in messageData">
+                            <Notifications :message="message" />
+                        </div>
+                    </div>
+                </div>
                 <div>
-                    <span>{{ messageData }}</span>
                     <span>Search:</span>
                     <input class="border" type="text" name="" id="">
                 </div>
@@ -47,24 +55,23 @@ import { EventsOff, EventsOn } from '../../wailsjs/runtime/runtime';
 import { useRouter } from 'vue-router';
 import NewProjectModal from './NewProjectModal.vue';
 import { Logout } from '../../wailsjs/go/main/App';
+import Notifications from './Notifications.vue';
+import { main } from '../../wailsjs/go/models';
 
 
 const { t } = useI18n()
 const { locale } = useI18n()
 const router = useRouter()
 
-type Message = {
-  message: string;
-}
-
 const selectedLanguage = ref("en")
-const messageData = ref("")
+const messageData = ref<main.Notification[]>([])
 const colorTheme = ref("light")
 //TODO SETTINGS DB TABLE
 //TODO SEARCH PROJECTS
 //TODO NOTIFICATIONS
 document.body.classList.add(colorTheme.value)
 const isCreateNewProject = ref(false)
+const isShowNotifications = ref(false)
 
 const toggleCreateProjectModal = () => {
     isCreateNewProject.value = !isCreateNewProject.value
@@ -80,9 +87,9 @@ const goBack = () => {
 
 
 onMounted(() => {
-  EventsOn("notification", (msg: Message) => {
-    messageData.value = msg.message
-    console.log(msg)
+  EventsOn("notification", (msg: main.Notification) => {
+    messageData.value.push(msg) 
+    
   })
 })
 
@@ -110,6 +117,15 @@ const logout = async () => {
     nextTick(() => {
         router.push('/login')
     })
+}
+
+const showNotifications = () => {
+    isShowNotifications.value = true
+}
+
+const closeNotifications = () => {
+    isShowNotifications.value = false
+    messageData.value.length = 0
 }
 </script>
 

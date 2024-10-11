@@ -2,7 +2,6 @@
 import { RouterView, useRouter } from 'vue-router';
 import { onMounted, provide, ref } from 'vue';
 import { projects } from '../wailsjs/go/models';
-import { GetUser } from '../wailsjs/go/main/App';
 import { getUser } from './functions';
 
 const router = useRouter()

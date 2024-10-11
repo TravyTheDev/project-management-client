@@ -97,7 +97,7 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, Ref, ref, watch } from 'vue';
+import { nextTick, onMounted, Ref, ref, watch, inject } from 'vue';
 import { main, projects } from '../../wailsjs/go/models';
 import { useRouter, useRoute } from 'vue-router';
 import { CreateNotes, EditPersonalNotes, EditProject, GetChildProjectsByParentID, GetNotesByProjectID, GetProjectByID, SearchProjectAssignee } from '../../wailsjs/go/projects/ProjectsHandler';
@@ -106,6 +106,7 @@ import { todoStatus, urgencyStatus } from '../consts';
 import NewProjectModal from '../components/NewProjectModal.vue';
 import { SendNotification } from '../../wailsjs/go/main/App';
 
+const loginUser = inject<Ref<projects.User | undefined>>("loginUser")
 const router = useRouter()
 const route = useRoute()
 
@@ -130,6 +131,7 @@ const notesTextArea = ref()
 const personalNotesRef = ref()
 const isShowNewProjectModal = ref(false)
 const notificationMessage = ref<main.Notification>({
+    id: Number(id),
     message: ''
 })
 
@@ -255,7 +257,7 @@ const saveEdit = async () => {
         project.value.id = Number(id)
         await EditProject(project.value)
         isEdit.value = false
-        if(prevAssignee.value?.id != project.value.assigneeID){
+        if(prevAssignee.value?.id !== project.value.assigneeID && project.value.assigneeID !== loginUser?.value?.id){
             sendNotification()
         }
     }
@@ -263,7 +265,8 @@ const saveEdit = async () => {
 
 const sendNotification = () => {
     notificationMessage.value = {
-        message: "HEY"
+        id: Number(id),
+        message: `You've been assigned to ${project.value?.title}`
     }
     SendNotification(Number(project.value?.assigneeID), notificationMessage.value)
 }

@@ -48,7 +48,8 @@ type User struct {
 }
 
 type Notification struct {
-	Message string `json:"message"`
+	ProjectID int    `json:"id"`
+	Message   string `json:"message"`
 }
 
 type SocketMessage struct {
