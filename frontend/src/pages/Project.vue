@@ -262,7 +262,9 @@ const saveEdit = async () => {
 }
 
 const sendNotification = () => {
-    notificationMessage.value.message = `You've been assigned to ${project.value?.title}`
+    notificationMessage.value = {
+        message: "HEY"
+    }
     SendNotification(Number(project.value?.assigneeID), notificationMessage.value)
 }
 

@@ -49,7 +49,6 @@ import NewProjectModal from './NewProjectModal.vue';
 import { Logout } from '../../wailsjs/go/main/App';
 
 
-const emit = defineEmits(['hide-layout'])
 const { t } = useI18n()
 const { locale } = useI18n()
 const router = useRouter()
@@ -108,7 +107,6 @@ watch(colorTheme, (newVal, oldVal) => {
 
 const logout = async () => {
     await Logout()
-    emit('hide-layout')
     nextTick(() => {
         router.push('/login')
     })

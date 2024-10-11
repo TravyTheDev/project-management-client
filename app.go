@@ -10,9 +10,13 @@ import (
 	"net/http/cookiejar"
 	"net/url"
 	"os"
+	"os/exec"
 	"os/signal"
 	"project-management-client/cookie"
+	"syscall"
 	"time"
+
+	osRuntime "runtime"
 
 	"github.com/gorilla/websocket"
 	"github.com/r3labs/sse/v2"
@@ -113,7 +117,7 @@ func (a *App) GetUser() *User {
 		return &User{}
 	}
 
-	//SERVERSIDE LOCALHOST SECURECOOKIES FALSE
+	//SERVERSIDE localhost SECURECOOKIES FALSE
 	res = a.getMeRequest()
 	defer res.Body.Close()
 	if res.StatusCode == 401 {
@@ -131,6 +135,7 @@ func (a *App) GetUser() *User {
 func (a *App) Logout() {
 	a.cookieStore.DeleteCookies()
 	httpClient.Jar.SetCookies(cookieUrl, nil)
+	RestartSelf()
 }
 
 func (a *App) JoinWebSocketRoom(roomID int, userID int, username string) {
@@ -197,22 +202,21 @@ func (a *App) WriteSocketMessage(message SocketMessage) {
 }
 
 func (a *App) SendNotification(id int, notfication Notification) {
-	var notification Notification
-	fmt.Println("SEND", notfication, id)
-	encodeBody, err := json.Marshal(notification)
+	encodeBody, err := json.Marshal(notfication)
 	if err != nil {
 		fmt.Println(err)
 	}
+
+	reader := bytes.NewReader(encodeBody)
 	connectStr := fmt.Sprintf("http://localhost:8000/api/v1/notifications/send/%d", id)
 	_, err = http.Post(
 		connectStr,
 		"Content-Type: application/json",
-		bytes.NewReader(encodeBody),
+		reader,
 	)
 	if err != nil {
 		fmt.Println(err)
 	}
-	// defer resp.Body.Close()
 }
 
 func (a *App) renewCookie() {
@@ -262,7 +266,6 @@ func (a *App) getCookies() {
 }
 
 func (a *App) notify(id int) {
-	fmt.Println(id)
 	notification := &Notification{}
 	connectStr := fmt.Sprintf("http://localhost:8000/api/v1/notifications/stream/%d", id)
 
@@ -271,7 +274,29 @@ func (a *App) notify(id int) {
 		if err := json.Unmarshal(msg.Data, &notification); err != nil {
 			fmt.Println(err)
 		}
-		fmt.Println("receive", notification)
 		runtime.EventsEmit(a.ctx, "notification", notification)
 	})
+}
+
+func RestartSelf() error {
+	self, err := os.Executable()
+	if err != nil {
+		return err
+	}
+	args := os.Args
+	env := os.Environ()
+	// Windows does not support exec syscall.
+	if osRuntime.GOOS == "windows" {
+		cmd := exec.Command(self, args[1:]...)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		cmd.Stdin = os.Stdin
+		cmd.Env = env
+		err := cmd.Start()
+		if err == nil {
+			os.Exit(0)
+		}
+		return err
+	}
+	return syscall.Exec(self, args, env)
 }

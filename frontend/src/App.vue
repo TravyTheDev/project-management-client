@@ -1,25 +1,19 @@
 <script lang="ts" setup>
-import { RouterView, useRoute, useRouter } from 'vue-router';
-import Layout from './components/Layout.vue'
+import { RouterView, useRouter } from 'vue-router';
 import { onMounted, provide, ref } from 'vue';
 import { projects } from '../wailsjs/go/models';
 import { GetUser } from '../wailsjs/go/main/App';
+import { getUser } from './functions';
 
-const route = useRoute()
 const router = useRouter()
 const loginUser = ref<projects.User>()
 
-const getUser = async () => {
-  try {
-    const res = await GetUser()
-    loginUser.value = res
-    if (loginUser.value.id === 0) {
-      router.push('/login')
-    }else {
-      router.push('/main')
-    }
-  } catch (error) {
-    console.log(error)
+const loadUser = async () => {
+  loginUser.value = await getUser()
+  if(loginUser.value?.id){
+    router.push('/main')
+  }else{
+    router.push('/login')
   }
 }
 
@@ -30,13 +24,13 @@ const colorTheme = ref("light")
 //TODO NOTIFICATIONS
 document.body.classList.add(colorTheme.value)
 onMounted(() => {
-  getUser()
+  loadUser()
 })
 // const getItemKey = (item: any) => item;
 </script>
 
 <template>
-  <RouterView :key="route.path" class="bg-backgroundColor h-[100vh] text-fontColor" />
+  <RouterView class="bg-backgroundColor h-[100vh] text-fontColor" />
 </template>
 
 <style>

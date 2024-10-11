@@ -23,6 +23,8 @@ import { nextTick, ref } from 'vue';
 import { Login } from '../../wailsjs/go/main/App';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
+import { getUser } from '../functions';
+import { main } from '../../wailsjs/go/models';
 
 const router = useRouter()
 const {t} = useI18n()
@@ -36,9 +38,10 @@ const login = async () => {
     try {
        const res = await Login(email.value, password.value)
        if (res && res!== 0){
-           nextTick(() => {
-               window.location.href = '/#/main'
-           })
+          let user:main.User | undefined = await getUser()
+          if (user?.id){
+            window.location.href = '/#/main'
+          }
        }else {
         isShowError.value = true
         errorValue.value = "invalid email or password"

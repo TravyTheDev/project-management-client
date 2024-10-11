@@ -6,15 +6,18 @@
                 <SideBar/>
             </div>
             <div class="col-span-5">
-                <RouterView />
+                <RouterView :key="route.path" />
             </div>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
+import { useRoute } from 'vue-router';
 import Navbar from './Navbar.vue';
 import SideBar from './SideBar.vue';
+
+const route = useRoute()
 
 </script>
 
