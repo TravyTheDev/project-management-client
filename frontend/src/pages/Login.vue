@@ -38,11 +38,7 @@ const login = async () => {
     try {
        const res = await Login(email.value, password.value)
        if (res && res!== 0){
-        
-        //   let user:main.User | undefined = await getUser()
-        //   if (user?.id){
             window.location.href = '/'
-        //   }
        }else {
         isShowError.value = true
         errorValue.value = "invalid email or password"
