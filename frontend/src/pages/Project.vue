@@ -78,6 +78,10 @@
                         <button class="border px-2 py-1" @click="toggleIsEditPersonalNotes">EDIT</button>
                     </div>
                 </div>
+                <div class="w-full">
+                    <h1 class="text-red-500 border-t-2 border-red-500 w-full">DANGER ZONE</h1>
+                    <button @click="toggleDeleteModal" class="text-red-500 border border-red-500 mt-4">DELETE PROJECT</button>
+                </div>
             </div>
         </div>
         <div v-if="childProjects?.length" class="border-l-2 px-1 h-[87vh] pb-2 overflow-y-auto divide-y">
@@ -93,6 +97,7 @@
         </div>
         <NewProjectModal v-if="isShowNewProjectModal" :parent="project" :parent-i-d="id"
             @close-modal="toggeNewProjectModal" @load-children="getChildProjects" />
+        <DeleteProjectModal @close-modal="toggleDeleteModal" v-if="isShowDeleteModal" :title="project?.title" :parent-i-d="id" />
     </div>
 </template>
 
@@ -100,11 +105,12 @@
 import { nextTick, onMounted, Ref, ref, watch, inject } from 'vue';
 import { main, projects } from '../../wailsjs/go/models';
 import { useRouter, useRoute } from 'vue-router';
-import { CreateNotes, EditPersonalNotes, EditProject, GetChildProjectsByParentID, GetNotesByProjectID, GetProjectByID, SearchProjectAssignee } from '../../wailsjs/go/projects/ProjectsHandler';
+import { CreateNotes, DeleteProject, EditPersonalNotes, EditProject, GetChildProjectsByParentID, GetNotesByProjectID, GetProjectByID, SearchProjectAssignee } from '../../wailsjs/go/projects/ProjectsHandler';
 import ProjectSkeleton from '../components/ProjectSkeleton.vue';
 import { todoStatus, urgencyStatus } from '../consts';
 import NewProjectModal from '../components/NewProjectModal.vue';
 import { SendNotification } from '../../wailsjs/go/main/App';
+import DeleteProjectModal from '../components/DeleteProjectModal.vue';
 
 const loginUser = inject<Ref<projects.User | undefined>>("loginUser")
 const router = useRouter()
@@ -134,6 +140,7 @@ const notificationMessage = ref<main.Notification>({
     id: Number(id),
     message: ''
 })
+const isShowDeleteModal = ref(false)
 
 const getProject = async () => {
     isLoading.value = true
@@ -295,6 +302,10 @@ const resize = (refName: Ref) => {
     } else {
         refName.value.classList.remove('expanded-text')
     }
+}
+
+const toggleDeleteModal = () => {
+    isShowDeleteModal.value = !isShowDeleteModal.value
 }
 
 </script>

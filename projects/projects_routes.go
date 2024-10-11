@@ -178,3 +178,20 @@ func (p *ProjectsHandler) GetChildProjectsByParentID(id int) []*Project {
 	}
 	return projects
 }
+
+func (p *ProjectsHandler) DeleteProject(id int) {
+	str := fmt.Sprintf("http://localhost:8000/api/v1/projects/delete_project/%d", id)
+	req, err := http.NewRequest("DELETE", str, nil)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer resp.Body.Close()
+}

@@ -6,6 +6,8 @@ export function CreateNotes(arg1:number,arg2:string):Promise<void>;
 
 export function CreateProject(arg1:projects.ProjectReq):Promise<void>;
 
+export function DeleteProject(arg1:number):Promise<void>;
+
 export function EditPersonalNotes(arg1:number,arg2:string):Promise<void>;
 
 export function EditProject(arg1:projects.Project):Promise<void>;

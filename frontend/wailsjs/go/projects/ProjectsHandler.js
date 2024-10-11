@@ -10,6 +10,10 @@ export function CreateProject(arg1) {
   return window['go']['projects']['ProjectsHandler']['CreateProject'](arg1);
 }
 
+export function DeleteProject(arg1) {
+  return window['go']['projects']['ProjectsHandler']['DeleteProject'](arg1);
+}
+
 export function EditPersonalNotes(arg1, arg2) {
   return window['go']['projects']['ProjectsHandler']['EditPersonalNotes'](arg1, arg2);
 }
