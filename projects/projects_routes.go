@@ -5,57 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
+	"project-management-client/types"
 )
 
 type ProjectsHandler struct {
 	projectsStore *ProjectsStore
-}
-
-type User struct {
-	ID       int    `json:"id"`
-	Username string `json:"username"`
-	Email    string `json:"email"`
-}
-
-type UserSlice struct {
-	Users []User `json:"users"`
-}
-
-type SearchReq struct {
-	Text string `json:"text"`
-}
-
-type Project struct {
-	ID          int       `json:"id"`
-	ParentID    int       `json:"parentID"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	Status      int       `json:"status"`
-	AssigneeID  int       `json:"assigneeID"`
-	Urgency     int       `json:"urgency"`
-	Notes       string    `json:"notes"`
-	StartDate   string    `json:"startDate"`
-	EndDate     string    `json:"endDate"`
-	CreatedAt   time.Time `json:"createdAt"`
-	UpdatedAt   time.Time `json:"updatedAt"`
-}
-
-type ProjectReq struct {
-	ParentID    int    `json:"parentID"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Status      int    `json:"status"`
-	AssigneeID  int    `json:"assigneeID"`
-	Urgency     int    `json:"urgency"`
-	Notes       string `json:"notes"`
-	StartDate   string `json:"startDate"`
-	EndDate     string `json:"endDate"`
-}
-
-type ProjectRes struct {
-	Project *Project `json:"project"`
-	User    *User    `json:"user"`
 }
 
 func NewProjectsHandler(projectsStore *ProjectsStore) *ProjectsHandler {
@@ -64,8 +18,8 @@ func NewProjectsHandler(projectsStore *ProjectsStore) *ProjectsHandler {
 	}
 }
 
-func (p *ProjectsHandler) GetProjectsByStatus(status int) []*ProjectRes {
-	projects := []*ProjectRes{}
+func (p *ProjectsHandler) GetProjectsByStatus(status int) []*types.ProjectRes {
+	projects := []*types.ProjectRes{}
 	str := fmt.Sprintf("http://localhost:8000/api/v1/projects/project_status/%d", status)
 
 	resp, err := http.Get(str)
@@ -79,8 +33,8 @@ func (p *ProjectsHandler) GetProjectsByStatus(status int) []*ProjectRes {
 	return projects
 }
 
-func (p *ProjectsHandler) GetProjectsByUrgency(urgency int) []*ProjectRes {
-	projects := []*ProjectRes{}
+func (p *ProjectsHandler) GetProjectsByUrgency(urgency int) []*types.ProjectRes {
+	projects := []*types.ProjectRes{}
 	str := fmt.Sprintf("http://localhost:8000/api/v1/projects/project_urgency/%d", urgency)
 
 	resp, err := http.Get(str)
@@ -94,8 +48,8 @@ func (p *ProjectsHandler) GetProjectsByUrgency(urgency int) []*ProjectRes {
 	return projects
 }
 
-func (p *ProjectsHandler) GetAllProjects() []*Project {
-	projects := []*Project{}
+func (p *ProjectsHandler) GetAllProjects() []*types.Project {
+	projects := []*types.Project{}
 	resp, err := http.Get("http://localhost:8000/api/v1/projects/all_projects")
 	if err != nil {
 		fmt.Println(err)
@@ -107,7 +61,7 @@ func (p *ProjectsHandler) GetAllProjects() []*Project {
 	return projects
 }
 
-func (p *ProjectsHandler) CreateProject(project ProjectReq) {
+func (p *ProjectsHandler) CreateProject(project types.ProjectReq) {
 	if project.Title == "" {
 		return
 	}
@@ -125,8 +79,8 @@ func (p *ProjectsHandler) CreateProject(project ProjectReq) {
 	}
 }
 
-func (p *ProjectsHandler) GetProjectByID(id string) *ProjectRes {
-	var project *ProjectRes
+func (p *ProjectsHandler) GetProjectByID(id string) *types.ProjectRes {
+	var project *types.ProjectRes
 	str := fmt.Sprintf("http://localhost:8000/api/v1/projects/project/%s", id)
 
 	resp, err := http.Get(str)
@@ -160,8 +114,8 @@ func (p *ProjectsHandler) EditPersonalNotes(projectID int, notes string) {
 	}
 }
 
-func (p *ProjectsHandler) SearchProjectAssignee(search SearchReq) []*User {
-	users := make([]*User, 0)
+func (p *ProjectsHandler) SearchProjectAssignee(search types.SearchReq) []*types.User {
+	users := make([]*types.User, 0)
 	str := fmt.Sprintf("http://localhost:8000/api/v1/search_username/%s", search.Text)
 
 	resp, err := http.Get(str)
@@ -175,7 +129,7 @@ func (p *ProjectsHandler) SearchProjectAssignee(search SearchReq) []*User {
 	return users
 }
 
-func (p *ProjectsHandler) EditProject(project Project) {
+func (p *ProjectsHandler) EditProject(project types.Project) {
 	encodeBody, err := json.Marshal(project)
 	if err != nil {
 		fmt.Println(err)
@@ -196,8 +150,8 @@ func (p *ProjectsHandler) EditProject(project Project) {
 	defer resp.Body.Close()
 }
 
-func (p *ProjectsHandler) GetChildProjectsByParentID(id int) []*Project {
-	var projects []*Project
+func (p *ProjectsHandler) GetChildProjectsByParentID(id int) []*types.Project {
+	var projects []*types.Project
 	str := fmt.Sprintf("http://localhost:8000/api/v1/projects/child_projects/%v", id)
 
 	resp, err := http.Get(str)
@@ -227,8 +181,8 @@ func (p *ProjectsHandler) DeleteProject(id int) {
 	defer resp.Body.Close()
 }
 
-func (p *ProjectsHandler) SearchProjects(search SearchReq) []*Project {
-	projects := make([]*Project, 0)
+func (p *ProjectsHandler) SearchProjects(search types.SearchReq) []*types.Project {
+	projects := make([]*types.Project, 0)
 	str := fmt.Sprintf("http://localhost:8000/api/v1/projects/search_projects/%s", search.Text)
 
 	resp, err := http.Get(str)

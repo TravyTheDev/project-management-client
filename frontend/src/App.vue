@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 import { RouterView, useRouter } from 'vue-router';
 import { onMounted, provide, ref } from 'vue';
-import { projects } from '../wailsjs/go/models';
+import { types } from '../wailsjs/go/models';
 import { getUser } from './functions';
 
 const router = useRouter()
-const loginUser = ref<projects.User>()
+const loginUser = ref<types.User>()
 
 const loadUser = async () => {
   loginUser.value = await getUser()

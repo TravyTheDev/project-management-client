@@ -13,6 +13,7 @@ import (
 	"os/exec"
 	"os/signal"
 	"project-management-client/cookie"
+	"project-management-client/types"
 	"syscall"
 	"time"
 
@@ -28,34 +29,6 @@ var (
 	retries      = 3
 	cookieUrl, _ = url.Parse("http://localhost:8000")
 )
-
-type LoginReq struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-type RegisterReq struct {
-	Username        string `json:"username"`
-	Email           string `json:"email"`
-	Password        string `json:"password"`
-	PasswordConfirm string `json:"passwordConfirm"`
-}
-
-type User struct {
-	ID       int    `json:"id"`
-	Username string `json:"username"`
-	Email    string `json:"email"`
-}
-
-type Notification struct {
-	ProjectID int    `json:"id"`
-	Message   string `json:"message"`
-}
-
-type SocketMessage struct {
-	UserID  string `json:"id"`
-	Message string `json:"message"`
-}
 
 // App struct
 type App struct {
@@ -86,7 +59,7 @@ func (a *App) startup(ctx context.Context) {
 // Greet returns a greeting for the given name
 func (a *App) Login(email string, password string) int {
 	var id int
-	reqBody := LoginReq{
+	reqBody := types.LoginReq{
 		Email:    email,
 		Password: password,
 	}
@@ -111,11 +84,11 @@ func (a *App) Login(email string, password string) int {
 	return id
 }
 
-func (a *App) GetUser() *User {
-	data := &User{}
+func (a *App) GetUser() *types.User {
+	data := &types.User{}
 	var res *http.Response
 	if len(httpClient.Jar.Cookies(cookieUrl)) == 0 {
-		return &User{}
+		return &types.User{}
 	}
 
 	//SERVERSIDE localhost SECURECOOKIES FALSE
@@ -140,8 +113,8 @@ func (a *App) Logout() {
 }
 
 func (a *App) JoinWebSocketRoom(roomID int, userID int, username string) {
-	msg := make(chan SocketMessage)
-	msgData := &SocketMessage{}
+	msg := make(chan types.SocketMessage)
+	msgData := &types.SocketMessage{}
 
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
@@ -192,7 +165,7 @@ func (a *App) JoinWebSocketRoom(roomID int, userID int, username string) {
 	}
 }
 
-func (a *App) WriteSocketMessage(message SocketMessage) {
+func (a *App) WriteSocketMessage(message types.SocketMessage) {
 	msg, err := json.Marshal(message)
 	if err != nil {
 		fmt.Println(err)
@@ -202,7 +175,7 @@ func (a *App) WriteSocketMessage(message SocketMessage) {
 	}
 }
 
-func (a *App) SendNotification(id int, notfication Notification) {
+func (a *App) SendNotification(id int, notfication types.Notification) {
 	encodeBody, err := json.Marshal(notfication)
 	if err != nil {
 		fmt.Println(err)
@@ -267,7 +240,7 @@ func (a *App) getCookies() {
 }
 
 func (a *App) notify(id int) {
-	notification := &Notification{}
+	notification := &types.Notification{}
 	connectStr := fmt.Sprintf("http://localhost:8000/api/v1/notifications/stream/%d", id)
 
 	client := sse.NewClient(connectStr)

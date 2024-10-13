@@ -67,7 +67,7 @@ import { useRouter } from 'vue-router';
 import NewProjectModal from './NewProjectModal.vue';
 import { Logout } from '../../wailsjs/go/main/App';
 import Notifications from './Notifications.vue';
-import { main, projects } from '../../wailsjs/go/models';
+import { types } from '../../wailsjs/go/models';
 import { SearchProjects } from '../../wailsjs/go/projects/ProjectsHandler';
 
 
@@ -76,10 +76,10 @@ const { locale } = useI18n()
 const router = useRouter()
 
 const selectedLanguage = ref("en")
-const messageData = ref<main.Notification[]>([])
+const messageData = ref<types.Notification[]>([])
 const colorTheme = ref("light")
 const searchText = ref("")
-const foundProjects = ref<projects.Project[]>()
+const foundProjects = ref<types.Project[]>()
 //TODO SETTINGS DB TABLE
 //TODO i18n ON EVERYTHING
 //TODO SEARCH PROJECTS
@@ -102,7 +102,7 @@ const goBack = () => {
 
 
 onMounted(() => {
-  EventsOn("notification", (msg: main.Notification) => {
+  EventsOn("notification", (msg: types.Notification) => {
     messageData.value.push(msg) 
     
   })
@@ -159,7 +159,7 @@ const handleSearch = (value: string) => {
 }
 
 const searchProjects = async (value: string) => {
-    const req: projects.SearchReq = {
+    const req: types.SearchReq = {
         text: value
     }
     const res = await SearchProjects(req)

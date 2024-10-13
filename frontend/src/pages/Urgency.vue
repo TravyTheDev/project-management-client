@@ -39,15 +39,15 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { GetProjectsByUrgency } from '../../wailsjs/go/projects/ProjectsHandler';
-import { projects } from '../../wailsjs/go/models';
+import { types } from '../../wailsjs/go/models';
 import router from '../router';
 import { urgencyMap } from '../consts';
 import ProjectPreview from '../components/ProjectPreview.vue';
 import ProjectPreviewSkeleton from '../components/ProjectPreviewSkeleton.vue';
 
-const lowUrgencyProjects = ref<projects.ProjectRes[]>([])
-const normalUrgencyProjects = ref<projects.ProjectRes[]>([])
-const highUrgencyProjects = ref<projects.ProjectRes[]>([])
+const lowUrgencyProjects = ref<types.ProjectRes[]>([])
+const normalUrgencyProjects = ref<types.ProjectRes[]>([])
+const highUrgencyProjects = ref<types.ProjectRes[]>([])
 
 const isLoadingLowUrgencyProjects = ref(false)
 const isLoadingNormalUrgencyProjects = ref(false)

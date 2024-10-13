@@ -6,13 +6,13 @@
 </template>
 
 <script setup lang="ts">
-import { projects } from '../../wailsjs/go/models';
+import { types } from '../../wailsjs/go/models';
 
 const emit = defineEmits(['view-project'])
 
 interface props {
-    project: projects.Project | undefined;
-    user: projects.User | undefined;
+    project: types.Project | undefined;
+    user: types.User | undefined;
 }
 
 const viewProject = (id: number | undefined) => {

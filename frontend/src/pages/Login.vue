@@ -19,12 +19,10 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, ref } from 'vue';
+import { ref } from 'vue';
 import { Login } from '../../wailsjs/go/main/App';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import { getUser } from '../functions';
-import { main } from '../../wailsjs/go/models';
 
 const router = useRouter()
 const {t} = useI18n()

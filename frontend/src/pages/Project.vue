@@ -103,7 +103,7 @@
 
 <script setup lang="ts">
 import { nextTick, onMounted, Ref, ref, watch, inject } from 'vue';
-import { main, projects } from '../../wailsjs/go/models';
+import { types } from '../../wailsjs/go/models';
 import { useRouter, useRoute } from 'vue-router';
 import { CreateNotes, DeleteProject, EditPersonalNotes, EditProject, GetChildProjectsByParentID, GetNotesByProjectID, GetProjectByID, SearchProjectAssignee } from '../../wailsjs/go/projects/ProjectsHandler';
 import ProjectSkeleton from '../components/ProjectSkeleton.vue';
@@ -112,17 +112,17 @@ import NewProjectModal from '../components/NewProjectModal.vue';
 import { SendNotification } from '../../wailsjs/go/main/App';
 import DeleteProjectModal from '../components/DeleteProjectModal.vue';
 
-const loginUser = inject<Ref<projects.User | undefined>>("loginUser")
+const loginUser = inject<Ref<types.User | undefined>>("loginUser")
 const router = useRouter()
 const route = useRoute()
 
 const id = route.params.id.toString()
 
-const projectRes = ref<projects.ProjectRes>()
-const project = ref<projects.Project>()
-const projectUser = ref<projects.User>()
+const projectRes = ref<types.ProjectRes>()
+const project = ref<types.Project>()
+const projectUser = ref<types.User>()
 const prevAssignee = ref(projectUser.value)
-const users = ref<projects.User[]>()
+const users = ref<types.User[]>()
 const personalNotes = ref("")
 const newPersonalNotes = ref("")
 const isEditPersonalNotes = ref(false)
@@ -130,13 +130,13 @@ const isLoading = ref(false)
 const searchText = ref("")
 const isEdit = ref(false)
 const isSetAssignee = ref(false)
-const childProjects = ref<projects.Project[]>()
+const childProjects = ref<types.Project[]>()
 const titleTextArea = ref()
 const descriptionTextArea = ref()
 const notesTextArea = ref()
 const personalNotesRef = ref()
 const isShowNewProjectModal = ref(false)
-const notificationMessage = ref<main.Notification>({
+const notificationMessage = ref<types.Notification>({
     id: Number(id),
     message: ''
 })
@@ -237,7 +237,7 @@ const handleSearch = (value: string) => {
 }
 
 const searchUser = async (value: string) => {
-    const req: projects.SearchReq = {
+    const req: types.SearchReq = {
         text: value
     }
     const res = await SearchProjectAssignee(req)
@@ -278,7 +278,7 @@ const sendNotification = () => {
     SendNotification(Number(project.value?.assigneeID), notificationMessage.value)
 }
 
-const setAssignee = (user: projects.User) => {
+const setAssignee = (user: types.User) => {
     if (project.value) {
         project.value.assigneeID = user.id
         searchText.value = user.username

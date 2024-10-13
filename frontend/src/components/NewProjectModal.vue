@@ -66,12 +66,12 @@
 <script setup lang="ts">
 import { inject, reactive, ref, Ref, watch } from 'vue';
 import { CreateProject, SearchProjectAssignee } from '../../wailsjs/go/projects/ProjectsHandler';
-import { projects } from '../../wailsjs/go/models';
+import { types } from '../../wailsjs/go/models';
 import { useRouter } from 'vue-router';
 import { todoStatus, urgencyStatus } from '../consts';
 
 interface props {
-    parent: projects.Project | undefined;
+    parent: types.Project | undefined;
     parentID: string | undefined;
 }
 
@@ -80,19 +80,19 @@ const props = defineProps<props>()
 const router = useRouter()
 
 //TODO ASSIGN SELF
-const loginUser = inject<Ref<projects.User | undefined>>("loginUser")
+const loginUser = inject<Ref<types.User | undefined>>("loginUser")
 
 const emit = defineEmits(['close-modal', 'load-children'])
 const titleTextArea = ref()
 const descriptionTextArea = ref()
 const notesTextArea = ref()
 const searchText = ref("")
-const users = ref<projects.User[]>()
+const users = ref<types.User[]>()
 const isSetAssignee = ref(false)
-const chosenUser = ref<projects.User>()
+const chosenUser = ref<types.User>()
 const noTitle = ref(false)
 
-const project: projects.ProjectReq = reactive({
+const project: types.ProjectReq = reactive({
     parentID: Number(props.parentID) ?? 0,
     title: "",
     description: "",
@@ -155,7 +155,7 @@ const searchUser = async (value: string) => {
     if (isSetAssignee.value) {
         return
     }
-    const req: projects.SearchReq = {
+    const req: types.SearchReq = {
         text: value
     }
     const res = await SearchProjectAssignee(req)
@@ -168,7 +168,7 @@ watch(searchText, () => {
     }
 })
 
-const setAssignee = (user: projects.User) => {
+const setAssignee = (user: types.User) => {
     isSetAssignee.value = true
     project.assigneeID = user.id
     searchText.value = user.username

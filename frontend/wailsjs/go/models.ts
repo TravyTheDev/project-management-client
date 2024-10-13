@@ -1,4 +1,4 @@
-export namespace main {
+export namespace types {
 	
 	export class Notification {
 	    id: number;
@@ -14,41 +14,6 @@ export namespace main {
 	        this.message = source["message"];
 	    }
 	}
-	export class SocketMessage {
-	    id: string;
-	    message: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new SocketMessage(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.id = source["id"];
-	        this.message = source["message"];
-	    }
-	}
-	export class User {
-	    id: number;
-	    username: string;
-	    email: string;
-	
-	    static createFrom(source: any = {}) {
-	        return new User(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.id = source["id"];
-	        this.username = source["username"];
-	        this.email = source["email"];
-	    }
-	}
-
-}
-
-export namespace projects {
-	
 	export class Project {
 	    id: number;
 	    parentID: number;
@@ -189,6 +154,20 @@ export namespace projects {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.text = source["text"];
+	    }
+	}
+	export class SocketMessage {
+	    id: string;
+	    message: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new SocketMessage(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.id = source["id"];
+	        this.message = source["message"];
 	    }
 	}
 

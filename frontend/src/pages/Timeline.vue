@@ -7,9 +7,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { GetAllProjects } from '../../wailsjs/go/projects/ProjectsHandler';
-import { projects } from '../../wailsjs/go/models';
+import { types } from '../../wailsjs/go/models';
 
-const projectsData = ref<projects.Project[]>([])
+const projectsData = ref<types.Project[]>([])
 
 // const getProjects = async () => {
 //    const res = await GetAllProjects()

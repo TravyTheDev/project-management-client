@@ -1,8 +1,8 @@
 import { GetUser } from "../wailsjs/go/main/App"
-import { main } from "../wailsjs/go/models"
+import { types } from "../wailsjs/go/models"
 
 export const getUser = async () => {
-    let user:main.User
+    let user:types.User
     try {
       const res = await GetUser()
       user = res

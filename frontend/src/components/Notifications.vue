@@ -5,11 +5,11 @@
 </template>
 
 <script setup lang="ts">
-import { main } from '../../wailsjs/go/models';
+import { types } from '../../wailsjs/go/models';
 
 
 interface props {
-    message: main.Notification;
+    message: types.Notification;
 }
 
 const props = defineProps<props>()

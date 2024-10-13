@@ -39,15 +39,15 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { GetProjectsByStatus } from '../../wailsjs/go/projects/ProjectsHandler';
-import { projects } from '../../wailsjs/go/models';
+import { types } from '../../wailsjs/go/models';
 import router from '../router';
 import { todoMap } from '../consts';
 import ProjectPreview from '../components/ProjectPreview.vue';
 import ProjectPreviewSkeleton from '../components/ProjectPreviewSkeleton.vue';
 
-const todoProjectsData = ref<projects.ProjectRes[]>([])
-const inProgressProjectsData = ref<projects.ProjectRes[]>([])
-const doneProjectsData = ref<projects.ProjectRes[]>([])
+const todoProjectsData = ref<types.ProjectRes[]>([])
+const inProgressProjectsData = ref<types.ProjectRes[]>([])
+const doneProjectsData = ref<types.ProjectRes[]>([])
 
 const isLoadingTodoProjects = ref(false)
 const isLoadingInProgressProjects = ref(false)
