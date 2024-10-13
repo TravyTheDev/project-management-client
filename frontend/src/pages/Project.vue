@@ -109,8 +109,9 @@ import { CreateNotes, DeleteProject, EditPersonalNotes, EditProject, GetChildPro
 import ProjectSkeleton from '../components/ProjectSkeleton.vue';
 import { todoStatus, urgencyStatus } from '../consts';
 import NewProjectModal from '../components/NewProjectModal.vue';
-import { SendNotification } from '../../wailsjs/go/main/App';
+import { JoinWebSocketRoom, SendNotification, WriteSocketMessage } from '../../wailsjs/go/main/App';
 import DeleteProjectModal from '../components/DeleteProjectModal.vue';
+import { EventsOn } from '../../wailsjs/runtime/runtime';
 
 const loginUser = inject<Ref<types.User | undefined>>("loginUser")
 const router = useRouter()
@@ -168,6 +169,15 @@ const goToChild = (id: number) => {
 onMounted(() => {
     getProject()
     getChildProjects()
+    if(loginUser?.value){
+        joinWebSocketRoom(loginUser.value)
+    }
+    EventsOn("websocket", (msg: types.SocketMessage) => {
+        console.log(msg)
+        if(project.value){
+            project.value.notes = msg.body
+        }
+    })
 })
 
 const toggleIsEditPersonalNotes = () => {
@@ -306,6 +316,25 @@ const resize = (refName: Ref) => {
 
 const toggleDeleteModal = () => {
     isShowDeleteModal.value = !isShowDeleteModal.value
+}
+
+const socketConnection = ref()
+
+const joinWebSocketRoom = (user: types.User) => {
+    JoinWebSocketRoom(Number(id), user.id, user.username)
+}
+
+//TODO
+const sendWebSocketMessage = () => {
+    if(project.value){
+        const message:types.SocketMessage = {
+            body: project.value.notes,
+            roomID: id,
+            userID: Number(loginUser?.value.id),
+            username: loginUser.value.username,
+        }
+        WriteSocketMessage(message)
+    }
 }
 
 </script>

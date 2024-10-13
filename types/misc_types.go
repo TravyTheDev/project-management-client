@@ -5,6 +5,8 @@ type SearchReq struct {
 }
 
 type SocketMessage struct {
-	UserID  string `json:"id"`
-	Message string `json:"message"`
+	Body     string `json:"body"`
+	RoomID   string `json:"roomID"`
+	Username string `json:"username"`
+	UserID   string `json:"userID"`
 }

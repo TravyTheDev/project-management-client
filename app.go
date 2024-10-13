@@ -112,6 +112,23 @@ func (a *App) Logout() {
 	RestartSelf()
 }
 
+func (a *App) CreateWebSocketRoom(roomID int) {
+	encodeBody, err := json.Marshal(roomID)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	reader := bytes.NewReader(encodeBody)
+	_, err = http.Post(
+		"http://localhost:8000/api/v1/ws/create_room",
+		"Content-Type: application/json",
+		reader,
+	)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
 func (a *App) JoinWebSocketRoom(roomID int, userID int, username string) {
 	msg := make(chan types.SocketMessage)
 	msgData := &types.SocketMessage{}
@@ -119,7 +136,7 @@ func (a *App) JoinWebSocketRoom(roomID int, userID int, username string) {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
-	connectStr := fmt.Sprintf("ws://localhost:8000/api/v1/ws/%d/%d/%s", roomID, userID, username)
+	connectStr := fmt.Sprintf("ws://localhost:8000/api/v1/ws/join_room/%d/%d/%s", roomID, userID, username)
 	c, _, err := websocket.DefaultDialer.Dial(connectStr, nil)
 	if err != nil {
 		fmt.Println("DAIL:", err)
@@ -162,6 +179,19 @@ func (a *App) JoinWebSocketRoom(roomID int, userID int, username string) {
 			}
 			return
 		}
+	}
+}
+
+func (a *App) ReadSocketMessage() {
+	_, m, err := a.conn.ReadMessage()
+	if err != nil {
+		if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
+			fmt.Printf("error: %v", err)
+		}
+	}
+	var message types.SocketMessage
+	if err := json.Unmarshal(m, &message); err != nil {
+		fmt.Printf("error: %v", err)
 	}
 }
 

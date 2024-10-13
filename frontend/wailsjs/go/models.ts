@@ -157,8 +157,10 @@ export namespace types {
 	    }
 	}
 	export class SocketMessage {
-	    id: string;
-	    message: string;
+	    body: string;
+	    roomID: string;
+	    username: string;
+	    userID: string;
 	
 	    static createFrom(source: any = {}) {
 	        return new SocketMessage(source);
@@ -166,8 +168,10 @@ export namespace types {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.id = source["id"];
-	        this.message = source["message"];
+	        this.body = source["body"];
+	        this.roomID = source["roomID"];
+	        this.username = source["username"];
+	        this.userID = source["userID"];
 	    }
 	}
 
