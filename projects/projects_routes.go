@@ -64,6 +64,36 @@ func NewProjectsHandler(projectsStore *ProjectsStore) *ProjectsHandler {
 	}
 }
 
+func (p *ProjectsHandler) GetProjectsByStatus(status int) []*ProjectRes {
+	projects := []*ProjectRes{}
+	str := fmt.Sprintf("http://localhost:8000/api/v1/projects/project_status/%d", status)
+
+	resp, err := http.Get(str)
+	if err != nil {
+		fmt.Println(err)
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&projects); err != nil {
+		fmt.Println(err)
+	}
+	defer resp.Body.Close()
+	return projects
+}
+
+func (p *ProjectsHandler) GetProjectsByUrgency(urgency int) []*ProjectRes {
+	projects := []*ProjectRes{}
+	str := fmt.Sprintf("http://localhost:8000/api/v1/projects/project_urgency/%d", urgency)
+
+	resp, err := http.Get(str)
+	if err != nil {
+		fmt.Println(err)
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&projects); err != nil {
+		fmt.Println(err)
+	}
+	defer resp.Body.Close()
+	return projects
+}
+
 func (p *ProjectsHandler) GetAllProjects() []*Project {
 	projects := []*Project{}
 	resp, err := http.Get("http://localhost:8000/api/v1/projects/all_projects")
@@ -73,6 +103,7 @@ func (p *ProjectsHandler) GetAllProjects() []*Project {
 	if err := json.NewDecoder(resp.Body).Decode(&projects); err != nil {
 		fmt.Println(err)
 	}
+	defer resp.Body.Close()
 	return projects
 }
 
@@ -194,4 +225,19 @@ func (p *ProjectsHandler) DeleteProject(id int) {
 		fmt.Println(err)
 	}
 	defer resp.Body.Close()
+}
+
+func (p *ProjectsHandler) SearchProjects(search SearchReq) []*Project {
+	projects := make([]*Project, 0)
+	str := fmt.Sprintf("http://localhost:8000/api/v1/projects/search_projects/%s", search.Text)
+
+	resp, err := http.Get(str)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer resp.Body.Close()
+	if err := json.NewDecoder(resp.Body).Decode(&projects); err != nil {
+		return nil
+	}
+	return projects
 }

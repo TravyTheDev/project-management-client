@@ -38,6 +38,18 @@ export function GetProjectByID(arg1) {
   return window['go']['projects']['ProjectsHandler']['GetProjectByID'](arg1);
 }
 
+export function GetProjectsByStatus(arg1) {
+  return window['go']['projects']['ProjectsHandler']['GetProjectsByStatus'](arg1);
+}
+
+export function GetProjectsByUrgency(arg1) {
+  return window['go']['projects']['ProjectsHandler']['GetProjectsByUrgency'](arg1);
+}
+
 export function SearchProjectAssignee(arg1) {
   return window['go']['projects']['ProjectsHandler']['SearchProjectAssignee'](arg1);
+}
+
+export function SearchProjects(arg1) {
+  return window['go']['projects']['ProjectsHandler']['SearchProjects'](arg1);
 }

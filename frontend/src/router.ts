@@ -2,7 +2,8 @@ import { createWebHashHistory, createRouter } from 'vue-router'
 
 import Main from './pages/Main.vue'
 import Login from './pages/Login.vue'
-import Timeline from './pages/Timeline.vue'
+// import Timeline from './pages/Timeline.vue'
+import Urgency from './pages/Urgency.vue'
 import Project from './pages/Project.vue'
 import Layout from './components/Layout.vue'
 
@@ -18,8 +19,8 @@ const routes = [
         component: Main,
       },
       {
-        path: 'timeline',
-        component: Timeline,
+        path: 'urgency',
+        component: Urgency,
       },
       {
         path: '/project/:id',

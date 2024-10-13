@@ -20,4 +20,10 @@ export function GetNotesByProjectID(arg1:number):Promise<string>;
 
 export function GetProjectByID(arg1:string):Promise<projects.ProjectRes>;
 
+export function GetProjectsByStatus(arg1:number):Promise<Array<projects.ProjectRes>>;
+
+export function GetProjectsByUrgency(arg1:number):Promise<Array<projects.ProjectRes>>;
+
 export function SearchProjectAssignee(arg1:projects.SearchReq):Promise<Array<projects.User>>;
+
+export function SearchProjects(arg1:projects.SearchReq):Promise<Array<projects.Project>>;

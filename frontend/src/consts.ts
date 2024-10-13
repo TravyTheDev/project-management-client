@@ -24,6 +24,12 @@ export const todoStatus = [
     },
 ]
 
+export const todoMap = {
+    "todo": 0,
+    "in_progress": 1,
+    "done": 2,
+}
+
 export const urgencyStatus = [
     {
         label: "low",
@@ -38,3 +44,9 @@ export const urgencyStatus = [
         value: 2,
     },
 ]
+
+export const urgencyMap = {
+    "low": 0,
+    "normal": 1,
+    "high": 2,
+}

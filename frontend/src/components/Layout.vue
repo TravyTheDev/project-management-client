@@ -3,7 +3,7 @@
         <Navbar />
         <div class="grid grid-cols-6">
             <div class="col-span-1">
-                <SideBar/>
+                <SideBar />
             </div>
             <div class="col-span-5">
                 <RouterView :key="route.path" />

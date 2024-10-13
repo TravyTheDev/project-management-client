@@ -11,14 +11,14 @@ import { projects } from '../../wailsjs/go/models';
 
 const projectsData = ref<projects.Project[]>([])
 
-const getProjects = async () => {
-   const res = await GetAllProjects()
-   projectsData.value = res
-}
+// const getProjects = async () => {
+//    const res = await GetAllProjects()
+//    projectsData.value = res
+// }
 
-onMounted(() => {
-    getProjects()
-})
+// onMounted(() => {
+//     getProjects()
+// })
 </script>
 
 <style scoped>
