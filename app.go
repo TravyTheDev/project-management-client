@@ -11,11 +11,9 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
-	"os/signal"
 	"project-management-client/cookie"
 	"project-management-client/types"
 	"syscall"
-	"time"
 
 	osRuntime "runtime"
 
@@ -133,16 +131,13 @@ func (a *App) JoinWebSocketRoom(roomID int, userID int, username string) {
 	msg := make(chan types.SocketMessage)
 	msgData := &types.SocketMessage{}
 
-	interrupt := make(chan os.Signal, 1)
-	signal.Notify(interrupt, os.Interrupt)
-
 	connectStr := fmt.Sprintf("ws://localhost:8000/api/v1/ws/join_room/%d/%d/%s", roomID, userID, username)
 	c, _, err := websocket.DefaultDialer.Dial(connectStr, nil)
 	if err != nil {
 		fmt.Println("DAIL:", err)
 	}
 	a.conn = c
-	defer c.Close()
+	defer a.conn.Close()
 
 	done := make(chan struct{})
 
@@ -152,6 +147,7 @@ func (a *App) JoinWebSocketRoom(roomID int, userID int, username string) {
 			_, message, err := a.conn.ReadMessage()
 			if err != nil {
 				log.Println("READ:", err)
+				break
 			}
 			if err := json.Unmarshal(message, &msgData); err != nil {
 				fmt.Println(err)
@@ -170,14 +166,6 @@ func (a *App) JoinWebSocketRoom(roomID int, userID int, username string) {
 				log.Println("WRITE:", err)
 				return
 			}
-		case <-interrupt:
-			log.Println("interrupt")
-			//no leaving message
-			select {
-			case <-done:
-			case <-time.After(time.Second):
-			}
-			return
 		}
 	}
 }
@@ -195,8 +183,14 @@ func (a *App) ReadSocketMessage() {
 	}
 }
 
+func (a *App) DisconnectWebSocketRoom() {
+	if err := a.conn.Close(); err != nil {
+		fmt.Println(err)
+	}
+}
+
 func (a *App) WriteSocketMessage(message types.SocketMessage) {
-	msg, err := json.Marshal(message)
+	msg, err := json.Marshal(message.Body)
 	if err != nil {
 		fmt.Println(err)
 	}

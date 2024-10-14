@@ -6,6 +6,10 @@ export function CreateWebSocketRoom(arg1) {
   return window['go']['main']['App']['CreateWebSocketRoom'](arg1);
 }
 
+export function DisconnectWebSocketRoom() {
+  return window['go']['main']['App']['DisconnectWebSocketRoom']();
+}
+
 export function GetUser() {
   return window['go']['main']['App']['GetUser']();
 }

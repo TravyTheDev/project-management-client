@@ -67,8 +67,9 @@
 import { inject, reactive, ref, Ref, watch } from 'vue';
 import { CreateProject, SearchProjectAssignee } from '../../wailsjs/go/projects/ProjectsHandler';
 import { types } from '../../wailsjs/go/models';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { todoStatus, urgencyStatus } from '../consts';
+import { debounceFunc } from '../functions';
 
 interface props {
     parent: types.Project | undefined;
@@ -77,6 +78,7 @@ interface props {
 
 const props = defineProps<props>()
 
+const route = useRoute()
 const router = useRouter()
 
 //TODO ASSIGN SELF
@@ -114,7 +116,11 @@ const createProject = async () => {
     if (props.parentID){
         emit('load-children')
     }else{
-        router.push(`/`)
+        if (route.path === '/main'){
+            router.push('/main/reload')
+        }else {
+            router.push('/main')
+        }
     }
 }
 
@@ -137,18 +143,7 @@ const handleSearch = (value: string) => {
         return
     }
     isSetAssignee.value = false
-    const timeoutID: number = window.setTimeout(() => { }, 0)
-
-    for (let id: number = timeoutID; id >= 0; id -= 1) {
-        window.clearTimeout(id)
-    }
-
-    setTimeout(() => {
-        if (value.length < 2) {
-            value = ''
-        }
-        searchUser(value)
-    }, 300)
+    debounceFunc(value, searchUser)
 }
 
 const searchUser = async (value: string) => {

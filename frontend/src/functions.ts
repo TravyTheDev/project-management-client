@@ -15,3 +15,18 @@ export const getUser = async () => {
       console.log(error)
     }
   }
+
+  export const debounceFunc = (value: string, func: Function) => {
+    const timeoutID: number = window.setTimeout(() => { }, 0)
+
+    for (let id: number = timeoutID; id >= 0; id -= 1) {
+        window.clearTimeout(id)
+    }
+
+    setTimeout(() => {
+        if (value.length < 2) {
+            value = ''
+        }
+        func(value)
+    }, 300)
+  }

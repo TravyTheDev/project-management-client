@@ -4,6 +4,8 @@ import {types} from '../models';
 
 export function CreateWebSocketRoom(arg1:number):Promise<void>;
 
+export function DisconnectWebSocketRoom():Promise<void>;
+
 export function GetUser():Promise<types.User>;
 
 export function JoinWebSocketRoom(arg1:number,arg2:number,arg3:string):Promise<void>;

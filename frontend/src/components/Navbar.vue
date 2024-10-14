@@ -60,7 +60,6 @@
 
 <script setup lang="ts">
 import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
-import { languages } from '../consts';
 import { useI18n } from 'vue-i18n';
 import { EventsOff, EventsOn } from '../../wailsjs/runtime/runtime';
 import { useRouter } from 'vue-router';
@@ -69,6 +68,7 @@ import { Logout } from '../../wailsjs/go/main/App';
 import Notifications from './Notifications.vue';
 import { types } from '../../wailsjs/go/models';
 import { SearchProjects } from '../../wailsjs/go/projects/ProjectsHandler';
+import { debounceFunc } from '../functions';
 
 
 const { t } = useI18n()
@@ -144,18 +144,7 @@ const closeNotifications = () => {
 }
 
 const handleSearch = (value: string) => {
-    const timeoutID: number = window.setTimeout(() => { }, 0)
-
-    for (let id: number = timeoutID; id >= 0; id -= 1) {
-        window.clearTimeout(id)
-    }
-
-    setTimeout(() => {
-        if (value.length < 2) {
-            value = ''
-        }
-        searchProjects(value)
-    }, 300)
+    debounceFunc(value, searchProjects)
 }
 
 const searchProjects = async (value: string) => {

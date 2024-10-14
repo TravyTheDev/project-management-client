@@ -1,8 +1,8 @@
 <template>
-    <div class="overflow-hidden grid grid-cols-4 whitespace-pre-line">
+    <div class="overflow-hidden grid grid-cols-4 whitespace-pre-line border-l-2 pl-1">
         <div class="col-span-3">
             <ProjectSkeleton v-if="isLoading" />
-            <div class="flex flex-col gap-1 items-start overflow-y-scroll h-[87vh] pb-2" v-else-if="project">
+            <div class="flex flex-col gap-1 items-start divide-y-2 overflow-y-scroll h-[87vh] pb-2" v-else-if="project">
                 <div class="flex flex-col gap-1">
                     <div class="relative">
                         <span class="whitespace-pre">Assignee: </span>
@@ -40,31 +40,37 @@
                             <button class="border px-2 py-1" v-if="!isEdit" @click="toggleIsEdit">EDIT</button>
                             <div v-else>
                                 <button class="border px-2 py-1" @click="saveEdit">SAVE</button>
-                                <button class="border px-2 py-1 ml-2" @click="toggleIsEdit">CANCEL</button>
+                                <button class="border px-2 py-1 ml-2" @click="cancelEdit">CANCEL</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div>
+                <div class="w-full pt-2 py-1">
                     <button @click="toggeNewProjectModal" class="border px-2 py-1">Add subtask</button>
                 </div>
-                <textarea @input="resize(ref(titleTextArea))" ref="titleTextArea" class="text-xl font-semibold w-full"
-                    rows="1" v-if="isEdit" v-model="project.title"></textarea>
-                <h1 class="text-xl font-semibold" v-else>{{ project.title }}</h1>
+                <div class="w-full">
+                    <textarea @input="resize(ref(titleTextArea))" ref="titleTextArea" class="text-xl font-semibold w-full"
+                        rows="1" v-if="isEdit" v-model="project.title"></textarea>
+                    <h1 class="text-xl font-semibold" v-else>{{ project.title }}</h1>
+                </div>
 
-                <p>Description:</p>
-                <textarea @input="resize(ref(descriptionTextArea))" class="w-full" ref="descriptionTextArea" rows="1"
-                    v-if="isEdit" v-model="project.description"></textarea>
-                <h3 v-else>{{ project.description }}</h3>
+                <div class="w-full">
+                    <p class="font-semibold">Description:</p>
+                    <textarea @input="resize(ref(descriptionTextArea))" class="w-full" ref="descriptionTextArea" rows="1"
+                        v-if="isEdit" v-model="project.description"></textarea>
+                    <h3 v-else>{{ project.description }}</h3>
+                </div>
 
-                <p>Notes:</p>
-                <textarea class="w-full" rows="1" @input="resize(ref(notesTextArea))" ref="notesTextArea" v-if="isEdit"
-                    v-model="project.notes"></textarea>
-                <p v-else>{{ project.notes }}</p>
+                <div class="w-full">
+                    <p class="font-semibold">Notes:</p>
+                    <textarea class="w-full" rows="1" @input="resize(ref(notesTextArea)); handleShareNotes(project.notes)" ref="notesTextArea" v-if="isEdit"
+                        v-model="project.notes"></textarea>
+                    <p v-else>{{ project.notes }}</p>
+                </div>
 
                 <div class="w-full border-t-2 mt-2">
-                    <p>Personal notes:</p>
+                    <p class="font-semibold">Personal notes:</p>
                     <div v-if="isEditPersonalNotes">
                         <textarea class="w-full" rows="1" @input="resize(ref(personalNotesRef))" ref="personalNotesRef"
                             v-model="newPersonalNotes"></textarea>
@@ -80,7 +86,8 @@
                 </div>
                 <div class="w-full">
                     <h1 class="text-red-500 border-t-2 border-red-500 w-full">DANGER ZONE</h1>
-                    <button @click="toggleDeleteModal" class="text-red-500 border border-red-500 mt-4">DELETE PROJECT</button>
+                    <button @click="toggleDeleteModal" class="text-red-500 border border-red-500 mt-4">DELETE
+                        PROJECT</button>
                 </div>
             </div>
         </div>
@@ -88,30 +95,36 @@
             <div v-for="child in childProjects">
                 <div @click="goToChild(child.id)" class="hover:cursor-pointer">
                     <p class="font-semibold">{{ child.title }}</p>
-                    <p>Status:</p>
-                    <p>{{ todoStatus[child.status].label }}</p>
-                    <p>Urgency:</p>
-                    <p>{{ urgencyStatus[child.urgency].label }}</p>
+                    <div>
+                        <span>Status: </span>
+                        <span>{{ todoStatus[child.status].label }}</span>
+                    </div>
+                    <div>
+                        <span>Urgency: </span>
+                        <span>{{ urgencyStatus[child.urgency].label }}</span>
+                    </div>
                 </div>
             </div>
         </div>
         <NewProjectModal v-if="isShowNewProjectModal" :parent="project" :parent-i-d="id"
             @close-modal="toggeNewProjectModal" @load-children="getChildProjects" />
-        <DeleteProjectModal @close-modal="toggleDeleteModal" v-if="isShowDeleteModal" :title="project?.title" :parent-i-d="id" />
+        <DeleteProjectModal @close-modal="toggleDeleteModal" v-if="isShowDeleteModal" :title="project?.title"
+            :parent-i-d="id" />
     </div>
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, Ref, ref, watch, inject } from 'vue';
+import { nextTick, onMounted, Ref, ref, watch, inject, onUnmounted } from 'vue';
 import { types } from '../../wailsjs/go/models';
 import { useRouter, useRoute } from 'vue-router';
-import { CreateNotes, DeleteProject, EditPersonalNotes, EditProject, GetChildProjectsByParentID, GetNotesByProjectID, GetProjectByID, SearchProjectAssignee } from '../../wailsjs/go/projects/ProjectsHandler';
+import { CreateNotes, EditPersonalNotes, EditProject, GetChildProjectsByParentID, GetNotesByProjectID, GetProjectByID, SearchProjectAssignee } from '../../wailsjs/go/projects/ProjectsHandler';
 import ProjectSkeleton from '../components/ProjectSkeleton.vue';
 import { todoStatus, urgencyStatus } from '../consts';
 import NewProjectModal from '../components/NewProjectModal.vue';
-import { JoinWebSocketRoom, SendNotification, WriteSocketMessage } from '../../wailsjs/go/main/App';
+import { DisconnectWebSocketRoom, JoinWebSocketRoom, SendNotification, WriteSocketMessage } from '../../wailsjs/go/main/App';
 import DeleteProjectModal from '../components/DeleteProjectModal.vue';
 import { EventsOn } from '../../wailsjs/runtime/runtime';
+import { debounceFunc } from '../functions';
 
 const loginUser = inject<Ref<types.User | undefined>>("loginUser")
 const router = useRouter()
@@ -169,13 +182,12 @@ const goToChild = (id: number) => {
 onMounted(() => {
     getProject()
     getChildProjects()
-    if(loginUser?.value){
+    if (loginUser?.value) {
         joinWebSocketRoom(loginUser.value)
     }
     EventsOn("websocket", (msg: types.SocketMessage) => {
-        console.log(msg)
-        if(project.value){
-            project.value.notes = msg.body
+        if (project.value) {
+            project.value.notes = JSON.parse(msg.body)
         }
     })
 })
@@ -232,18 +244,7 @@ const handleSearch = (value: string) => {
         return
     }
     isSetAssignee.value = false
-    const timeoutID: number = window.setTimeout(() => { }, 0)
-
-    for (let id: number = timeoutID; id >= 0; id -= 1) {
-        window.clearTimeout(id)
-    }
-
-    setTimeout(() => {
-        if (value.length < 2) {
-            value = ''
-        }
-        searchUser(value)
-    }, 300)
+    debounceFunc(value, searchUser)
 }
 
 const searchUser = async (value: string) => {
@@ -274,10 +275,16 @@ const saveEdit = async () => {
         project.value.id = Number(id)
         await EditProject(project.value)
         isEdit.value = false
-        if(prevAssignee.value?.id !== project.value.assigneeID && project.value.assigneeID !== loginUser?.value?.id){
+        if (prevAssignee.value?.id !== project.value.assigneeID && project.value.assigneeID !== loginUser?.value?.id) {
             sendNotification()
         }
     }
+}
+
+const cancelEdit = () => {
+    //todo reset values
+    getProject()
+    isEdit.value = false
 }
 
 const sendNotification = () => {
@@ -301,6 +308,9 @@ const setAssignee = (user: types.User) => {
 }
 
 const resize = (refName: Ref) => {
+    if (!refName.value){
+        return
+    }
     refName.value.style.height = 'auto'
     if (refName.value.scrollHeight < 104) {
         refName.value.style.height = refName.value.scrollHeight + 'px'
@@ -318,24 +328,37 @@ const toggleDeleteModal = () => {
     isShowDeleteModal.value = !isShowDeleteModal.value
 }
 
-const socketConnection = ref()
-
 const joinWebSocketRoom = (user: types.User) => {
     JoinWebSocketRoom(Number(id), user.id, user.username)
 }
 
 //TODO
-const sendWebSocketMessage = () => {
-    if(project.value){
-        const message:types.SocketMessage = {
-            body: project.value.notes,
+const sendWebSocketMessage = (value: string) => {
+    if (!loginUser || loginUser.value === undefined) {
+        return
+    }
+    if (project.value) {
+        const message: types.SocketMessage = {
+            body: value,
             roomID: id,
-            userID: Number(loginUser?.value.id),
+            userID: String(loginUser?.value.id),
             username: loginUser.value.username,
         }
         WriteSocketMessage(message)
     }
 }
+
+const handleShareNotes = (value: string) => {
+    debounceFunc(value, sendWebSocketMessage)
+}
+
+const disconnectWebSocket = async () => {
+    await DisconnectWebSocketRoom()
+}
+
+onUnmounted(() => {
+    disconnectWebSocket()
+})
 
 </script>
 

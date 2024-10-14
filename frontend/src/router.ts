@@ -19,6 +19,10 @@ const routes = [
         component: Main,
       },
       {
+        path: 'main/reload',
+        component: Main,
+      },
+      {
         path: 'urgency',
         component: Urgency,
       },
