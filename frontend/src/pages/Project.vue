@@ -36,7 +36,8 @@
                             <option v-for="todo in todoStatus" :value="todo.value">{{ todo.label }}</option>
                         </select>
                         <p>Urgency:</p>
-                        <select @change="saveEdit" class="text-black" v-model="project.urgency" :disabled="!isEditUrgency">
+                        <select @change="saveEdit" class="text-black" v-model="project.urgency"
+                            :disabled="!isEditUrgency">
                             <option v-for="status in urgencyStatus" :value="status.value">{{ status.label }}</option>
                         </select>
                     </div>
@@ -46,8 +47,9 @@
                     <button @click="toggeNewProjectModal" class="border px-2 py-1">Add subtask</button>
                 </div>
                 <div class="w-full">
-                    <textarea @blur="handleIsEdit('title')" @input="resize(ref(titleTextArea)); handleShareNotes(project.title, 'title')" ref="titleTextArea"
-                        class="text-xl font-semibold w-full" rows="1" v-if="isEditTitle"
+                    <textarea @blur="handleIsEdit('title')"
+                        @input="resize(ref(titleTextArea)); handleShareNotes(project.title, 'title')"
+                        ref="titleTextArea" class="text-xl font-semibold w-full" rows="1" v-if="isEditTitle"
                         v-model="project.title"></textarea>
                     <h1 @click="handleIsEdit('title')" class="text-xl font-semibold" v-else>{{ project.title }}</h1>
                 </div>
@@ -55,7 +57,8 @@
                 <div class="w-full">
                     <p @click="!project.description ? handleIsEdit('description') : null" class="font-semibold">
                         Description:</p>
-                    <textarea @blur="handleIsEdit('description')" @input="resize(ref(descriptionTextArea)); handleShareNotes(project.description, 'description')"
+                    <textarea @blur="handleIsEdit('description')"
+                        @input="resize(ref(descriptionTextArea)); handleShareNotes(project.description, 'description')"
                         class="w-full" ref="descriptionTextArea" rows="1" v-if="isEditDescription"
                         v-model="project.description"></textarea>
                     <h3 @click="handleIsEdit('description')" v-else>{{ project.description }}</h3>
@@ -64,8 +67,8 @@
                 <div class="w-full">
                     <p @click="!project.notes ? handleIsEdit('notes') : null" class="font-semibold">Notes:</p>
                     <textarea @blur="handleIsEdit('notes')" class="w-full" rows="1"
-                        @input="resize(ref(notesTextArea)); handleShareNotes(project.notes, 'notes')" ref="notesTextArea"
-                        v-if="isEditNotes" v-model="project.notes"></textarea>
+                        @input="resize(ref(notesTextArea)); handleShareNotes(project.notes, 'notes')"
+                        ref="notesTextArea" v-if="isEditNotes" v-model="project.notes"></textarea>
                     <p @click="handleIsEdit('notes')" v-else>{{ project.notes }}</p>
                 </div>
 
@@ -274,13 +277,13 @@ onMounted(() => {
         if (project.value) {
             //This is disgusting
             const message = JSON.parse(JSON.parse(msg.body))
-            if(message.area === "title"){
+            if (message.area === "title") {
                 project.value.title = message.body
             }
-            if(message.area === "description"){
+            if (message.area === "description") {
                 project.value.description = message.body
             }
-            if(message.area === "notes"){
+            if (message.area === "notes") {
                 project.value.notes = message.body
             }
         }
@@ -378,11 +381,11 @@ const setAssignee = async (user: types.User) => {
         projectUser.value = user
         isSetAssignee.value = true
         if (
-        project.value.assigneeID !== 0 &&
-        prevAssignee.value?.id !== 
-        project.value.assigneeID && 
-        project.value.assigneeID !== 
-        loginUser?.value?.id
+            project.value.assigneeID !== 0 &&
+            prevAssignee.value?.id !==
+            project.value.assigneeID &&
+            project.value.assigneeID !==
+            loginUser?.value?.id
         ) {
             sendNotification()
         }
@@ -437,9 +440,9 @@ const sendWebSocketMessage = (value: string) => {
 
 const handleShareNotes = (value: string, area: string) => {
     const messageBody = {
-            area: area,
-            body: value,
-        }
+        area: area,
+        body: value,
+    }
     const json = JSON.stringify(messageBody)
     debounceFunc(json, sendWebSocketMessage)
 }
