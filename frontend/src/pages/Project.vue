@@ -5,44 +5,40 @@
             <div class="flex flex-col gap-1 items-start divide-y-2 overflow-y-scroll h-[87vh] pb-2" v-else-if="project">
                 <div class="flex flex-col gap-1">
                     <div class="relative">
-                        <span class="whitespace-pre">Assignee: </span>
-                        <input v-if="isEdit" v-model="searchText" type="text">
-                        <div v-if="users && isEdit && !isSetAssignee">
+                        <span @click="editProjectUser" class="whitespace-pre">Assignee: </span>
+                        <input ref="projectUserInputRef" @blur="endEditProjectUser" v-if="isEditProjectUser"
+                            v-model="searchText" type="text">
+                        <div v-if="users && isEditProjectUser && !isSetAssignee">
                             <div class="absolute ml-[70.84px] bg-white z-10 mt-1">
-                                <div @click="setAssignee(user)"
+                                <div @mousedown="setAssignee(user)"
                                     class="w-48 px-2 truncate border border-black divide-y hover:cursor-pointer hover:bg-slate-300"
                                     v-for="user in users">
                                     {{ user.username }}
                                 </div>
                             </div>
                         </div>
-                        <span v-else-if="!isEdit">{{ projectUser?.username }}</span>
+                        <span @click="editProjectUser" v-else-if="!isEditProjectUser">{{ projectUser?.username }}</span>
                     </div>
                     <div class="flex gap-1 items-center">
-                        <p>Start date:</p>
-                        <input v-if="isEdit" v-model="project.startDate" type="date">
-                        <p v-else>{{ project.startDate }}</p>
-                        <p>End date:</p>
-                        <input v-if="isEdit" v-model="project.endDate" type="date">
-                        <p v-else>{{ project.endDate }}</p>
+                        <p @click="!project.startDate ? handleIsEdit('start_date') : null">Start date:</p>
+                        <input ref="startDateRef" @blur="handleIsEdit('start_date')" v-if="isEditStartDate"
+                            v-model="project.startDate" type="date">
+                        <p @click="handleIsEdit('start_date')" v-else>{{ project.startDate }}</p>
+                        <p @click="!project.endDate ? handleIsEdit('end_date') : null">End date:</p>
+                        <input ref="endDateRef" @blur="handleIsEdit('end_date')" v-if="isEditEndDate"
+                            v-model="project.endDate" type="date">
+                        <p @click="handleIsEdit('end_date')" v-else>{{ project.endDate }}</p>
                     </div>
 
                     <div class="flex gap-1 items-center">
                         <p>Status:</p>
-                        <select class="text-black" v-model="project.status" :disabled="!isEdit">
+                        <select @change="saveEdit" class="text-black" v-model="project.status">
                             <option v-for="todo in todoStatus" :value="todo.value">{{ todo.label }}</option>
                         </select>
                         <p>Urgency:</p>
-                        <select class="text-black" v-model="project.urgency" :disabled="!isEdit">
+                        <select @change="saveEdit" class="text-black" v-model="project.urgency" :disabled="!isEditUrgency">
                             <option v-for="status in urgencyStatus" :value="status.value">{{ status.label }}</option>
                         </select>
-                        <div>
-                            <button class="border px-2 py-1" v-if="!isEdit" @click="toggleIsEdit">EDIT</button>
-                            <div v-else>
-                                <button class="border px-2 py-1" @click="saveEdit">SAVE</button>
-                                <button class="border px-2 py-1 ml-2" @click="cancelEdit">CANCEL</button>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -50,23 +46,27 @@
                     <button @click="toggeNewProjectModal" class="border px-2 py-1">Add subtask</button>
                 </div>
                 <div class="w-full">
-                    <textarea @input="resize(ref(titleTextArea))" ref="titleTextArea" class="text-xl font-semibold w-full"
-                        rows="1" v-if="isEdit" v-model="project.title"></textarea>
-                    <h1 class="text-xl font-semibold" v-else>{{ project.title }}</h1>
+                    <textarea @blur="handleIsEdit('title')" @input="resize(ref(titleTextArea)); handleShareNotes(project.title, 'title')" ref="titleTextArea"
+                        class="text-xl font-semibold w-full" rows="1" v-if="isEditTitle"
+                        v-model="project.title"></textarea>
+                    <h1 @click="handleIsEdit('title')" class="text-xl font-semibold" v-else>{{ project.title }}</h1>
                 </div>
 
                 <div class="w-full">
-                    <p class="font-semibold">Description:</p>
-                    <textarea @input="resize(ref(descriptionTextArea))" class="w-full" ref="descriptionTextArea" rows="1"
-                        v-if="isEdit" v-model="project.description"></textarea>
-                    <h3 v-else>{{ project.description }}</h3>
+                    <p @click="!project.description ? handleIsEdit('description') : null" class="font-semibold">
+                        Description:</p>
+                    <textarea @blur="handleIsEdit('description')" @input="resize(ref(descriptionTextArea)); handleShareNotes(project.description, 'description')"
+                        class="w-full" ref="descriptionTextArea" rows="1" v-if="isEditDescription"
+                        v-model="project.description"></textarea>
+                    <h3 @click="handleIsEdit('description')" v-else>{{ project.description }}</h3>
                 </div>
 
                 <div class="w-full">
-                    <p class="font-semibold">Notes:</p>
-                    <textarea class="w-full" rows="1" @input="resize(ref(notesTextArea)); handleShareNotes(project.notes)" ref="notesTextArea" v-if="isEdit"
-                        v-model="project.notes"></textarea>
-                    <p v-else>{{ project.notes }}</p>
+                    <p @click="!project.notes ? handleIsEdit('notes') : null" class="font-semibold">Notes:</p>
+                    <textarea @blur="handleIsEdit('notes')" class="w-full" rows="1"
+                        @input="resize(ref(notesTextArea)); handleShareNotes(project.notes, 'notes')" ref="notesTextArea"
+                        v-if="isEditNotes" v-model="project.notes"></textarea>
+                    <p @click="handleIsEdit('notes')" v-else>{{ project.notes }}</p>
                 </div>
 
                 <div class="w-full border-t-2 mt-2">
@@ -142,13 +142,26 @@ const newPersonalNotes = ref("")
 const isEditPersonalNotes = ref(false)
 const isLoading = ref(false)
 const searchText = ref("")
-const isEdit = ref(false)
+
+const isEditTitle = ref(false)
+const isEditDescription = ref(false)
+const isEditNotes = ref(false)
+const isEditProjectUser = ref(false)
+const isEditStartDate = ref(false)
+const isEditEndDate = ref(false)
+const isEditStatus = ref(false)
+const isEditUrgency = ref(false)
+
 const isSetAssignee = ref(false)
 const childProjects = ref<types.Project[]>()
 const titleTextArea = ref()
 const descriptionTextArea = ref()
 const notesTextArea = ref()
 const personalNotesRef = ref()
+const projectUserInputRef = ref()
+const startDateRef = ref()
+const endDateRef = ref()
+
 const isShowNewProjectModal = ref(false)
 const notificationMessage = ref<types.Notification>({
     id: Number(id),
@@ -164,6 +177,78 @@ const getProject = async () => {
     projectUser.value = res.user
     searchText.value = projectUser.value?.username ?? ''
     isLoading.value = false
+}
+
+const handleIsEdit = (section: string) => {
+    switch (section) {
+        case "title":
+            isEditTitle.value = !isEditTitle.value
+            nextTick(() => {
+                handleResizeAndFocus(isEditTitle, titleTextArea)
+            })
+            return
+        case "description":
+            isEditDescription.value = !isEditDescription.value
+            nextTick(() => {
+                handleResizeAndFocus(isEditDescription, descriptionTextArea)
+            })
+            return
+        case "notes":
+            isEditNotes.value = !isEditNotes.value
+            nextTick(() => {
+                handleResizeAndFocus(isEditNotes, notesTextArea)
+            })
+            return
+        case "start_date":
+            isEditStartDate.value = !isEditStartDate.value
+            nextTick(() => {
+                handleEditNonText(isEditStartDate, startDateRef)
+            })
+            return
+        case "end_date":
+            isEditEndDate.value = !isEditEndDate.value
+            nextTick(() => {
+                handleEditNonText(isEditEndDate, endDateRef)
+            })
+            return
+        case "end_date":
+            isEditEndDate.value = !isEditEndDate.value
+            nextTick(() => {
+                handleEditNonText(isEditEndDate, endDateRef)
+            })
+            return
+    }
+}
+
+const handleResizeAndFocus = async (isEditRefVal: Ref, textAreaRefVal: Ref) => {
+    if (isEditRefVal.value) {
+        resize(textAreaRefVal)
+        textAreaRefVal.value.focus()
+    } else {
+        await saveEdit()
+    }
+}
+
+const editProjectUser = () => {
+    isEditProjectUser.value = true
+    nextTick(() => {
+        projectUserInputRef.value.focus()
+    })
+}
+
+const endEditProjectUser = () => {
+    if (!isSetAssignee.value) {
+        searchText.value = projectRes.value?.user?.username ?? ''
+    }
+    isEditProjectUser.value = false
+}
+
+const handleEditNonText = async (isEditRefVal: Ref, refVal: Ref) => {
+    if (isEditRefVal.value) {
+        refVal.value.focus()
+    } else {
+        await saveEdit()
+    }
 }
 
 const toggeNewProjectModal = () => {
@@ -187,7 +272,17 @@ onMounted(() => {
     }
     EventsOn("websocket", (msg: types.SocketMessage) => {
         if (project.value) {
-            project.value.notes = JSON.parse(msg.body)
+            //This is disgusting
+            const message = JSON.parse(JSON.parse(msg.body))
+            if(message.area === "title"){
+                project.value.title = message.body
+            }
+            if(message.area === "description"){
+                project.value.description = message.body
+            }
+            if(message.area === "notes"){
+                project.value.notes = message.body
+            }
         }
     })
 })
@@ -261,30 +356,11 @@ watch(searchText, () => {
     }
 })
 
-const toggleIsEdit = () => {
-    isEdit.value = !isEdit.value
-    nextTick(() => {
-        resize(titleTextArea)
-        resize(descriptionTextArea)
-        resize(notesTextArea)
-    })
-}
-
 const saveEdit = async () => {
     if (project.value) {
         project.value.id = Number(id)
         await EditProject(project.value)
-        isEdit.value = false
-        if (prevAssignee.value?.id !== project.value.assigneeID && project.value.assigneeID !== loginUser?.value?.id) {
-            sendNotification()
-        }
     }
-}
-
-const cancelEdit = () => {
-    //todo reset values
-    getProject()
-    isEdit.value = false
 }
 
 const sendNotification = () => {
@@ -295,12 +371,24 @@ const sendNotification = () => {
     SendNotification(Number(project.value?.assigneeID), notificationMessage.value)
 }
 
-const setAssignee = (user: types.User) => {
+const setAssignee = async (user: types.User) => {
     if (project.value) {
         project.value.assigneeID = user.id
         searchText.value = user.username
         projectUser.value = user
         isSetAssignee.value = true
+        if (
+        project.value.assigneeID !== 0 &&
+        prevAssignee.value?.id !== 
+        project.value.assigneeID && 
+        project.value.assigneeID !== 
+        loginUser?.value?.id
+        ) {
+            sendNotification()
+        }
+        await nextTick(() => {
+            saveEdit()
+        })
     }
     if (users.value) {
         users.value.length = 0
@@ -308,7 +396,7 @@ const setAssignee = (user: types.User) => {
 }
 
 const resize = (refName: Ref) => {
-    if (!refName.value){
+    if (!refName.value) {
         return
     }
     refName.value.style.height = 'auto'
@@ -332,7 +420,6 @@ const joinWebSocketRoom = (user: types.User) => {
     JoinWebSocketRoom(Number(id), user.id, user.username)
 }
 
-//TODO
 const sendWebSocketMessage = (value: string) => {
     if (!loginUser || loginUser.value === undefined) {
         return
@@ -348,8 +435,13 @@ const sendWebSocketMessage = (value: string) => {
     }
 }
 
-const handleShareNotes = (value: string) => {
-    debounceFunc(value, sendWebSocketMessage)
+const handleShareNotes = (value: string, area: string) => {
+    const messageBody = {
+            area: area,
+            body: value,
+        }
+    const json = JSON.stringify(messageBody)
+    debounceFunc(json, sendWebSocketMessage)
 }
 
 const disconnectWebSocket = async () => {

@@ -65,6 +65,9 @@ func (p *ProjectsHandler) CreateProject(project types.ProjectReq) {
 	if project.Title == "" {
 		return
 	}
+	if project.ParentID == 0 {
+		project.ParentID = -1
+	}
 	encodeBody, err := json.Marshal(project)
 	if err != nil {
 		fmt.Println(err)
