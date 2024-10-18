@@ -7,7 +7,7 @@
                 <RouterLink :class="{'active': active == 'urgency'}" @click="setActive('urgency')" to="/urgency" class="hover:bg-slate-300">Urgency</RouterLink>
             </div>
         </div>
-        <!-- <h3 class="hover:cursor-pointer" @click="setActive('/timeline')">Timeline</h3> -->
+        <RouterLink to="/timeline">Timeline</RouterLink>
     </div>
 </template>
 

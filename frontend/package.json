@@ -9,6 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@vuepic/vue-datepicker": "^9.0.3",
+    "chart.js": "^4.4.5",
+    "chartjs-adapter-date-fns": "^3.0.0",
     "vue": "^3.2.37",
     "vue-i18n": "^10.0.3",
     "vue-router": "^4.4.5"
