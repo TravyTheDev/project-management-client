@@ -13,17 +13,17 @@ export const todoStatus = [
     {
         label: "todo",
         value: 0,
-        color: "rgb(249 115 22)"
+        color: "#f97316"
     },
     {
         label: "in progress",
         value: 1,
-        color: "rgb(8 145 178)"
+        color: "#0891b2"
     },
     {
         label: "done",
         value: 2,
-        color: "rgb(22 163 74)"
+        color: "#16a34a"
     },
 ]
 
