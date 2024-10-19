@@ -1,7 +1,7 @@
 <template>
     <div @click="emit('close-modal')"
         class="absolute w-full bg-black bg-opacity-30 h-screen top-0 left-0 flex flex-col px-8">
-        <div @click.stop class="relative p-4 bg-white text-black self-start m-auto top-0 bottom-0 w-[85vw]">
+        <div @click.stop class="z-20 relative p-4 bg-white text-black self-start m-auto top-0 bottom-0 w-[85vw]">
             <div>
                 <div class="flex flex-col gap-1">
                     <div v-if="parent && parentID">
