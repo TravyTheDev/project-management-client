@@ -1,6 +1,6 @@
 <template>
-    <div id="chart">
-        <VueApexCharts type="rangeBar" height="350" :options="chartOptions" :series="data.series"></VueApexCharts>
+    <div id="chart" class="overflow-y-auto h-full">
+        <VueApexCharts type="rangeBar" height="87%" :options="chartOptions" :series="data.series"></VueApexCharts>
     </div>
 </template>
 
@@ -28,17 +28,36 @@ const data = computed(() => {
 
 const chartOptions = {
     chart: {
-        height: 350,
-        type: 'rangeBar'
+        height: 50,
+        type: 'rangeBar',
+        zoom: {
+            enabled: false
+        }
     },
     plotOptions: {
         bar: {
-            horizontal: true
+            horizontal: true,
+            // isDumbbell: true,
+            barHeight: "50%",
+            columnWidth: '50%',
         }
     },
     xaxis: {
-        type: 'datetime'
-    }
+        type: 'datetime',
+        position: 'top',
+    },
+    grid: {
+              xaxis: {
+                lines: {
+                  show: true
+                },
+              },
+              yaxis: {
+                lines: {
+                  show: true
+                }
+              }
+            }
 }
 
 const makeChartData = () => {
