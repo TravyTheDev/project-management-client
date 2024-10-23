@@ -3,8 +3,8 @@
         <div>
             <RouterLink to="/main">Projects</RouterLink>
             <div class="ml-2 flex flex-col w-[70%]">
-                <RouterLink :class="{'active': active == 'main'}" @click="setActive('main')" to="/main" class="hover:bg-slate-300">Status</RouterLink>
-                <RouterLink :class="{'active': active == 'urgency'}" @click="setActive('urgency')" to="/urgency" class="hover:bg-slate-300">Urgency</RouterLink>
+                <RouterLink to="/main" class="hover:bg-slate-300">Status</RouterLink>
+                <RouterLink to="/urgency" class="hover:bg-slate-300">Urgency</RouterLink>
             </div>
         </div>
         <RouterLink to="/timeline">Timeline</RouterLink>

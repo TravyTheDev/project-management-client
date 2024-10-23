@@ -36,8 +36,7 @@
                             <option v-for="todo in todoStatus" :value="todo.value">{{ todo.label }}</option>
                         </select>
                         <p>Urgency:</p>
-                        <select @change="saveEdit" class="text-black" v-model="project.urgency"
-                            :disabled="!isEditUrgency">
+                        <select @change="saveEdit" class="text-black" v-model="project.urgency">
                             <option v-for="status in urgencyStatus" :value="status.value">{{ status.label }}</option>
                         </select>
                     </div>
