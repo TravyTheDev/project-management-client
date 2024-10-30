@@ -13,6 +13,18 @@ It connects to a Go server https://github.com/TravyTheDev/personal-site-server w
 
 This started because I was wondering if it was possible to do access/refresh token auth on the desktop and it just got out of hand.
 
+### Usage
+
+You must have an account the admin has made for you to log in. 
+
+When live editing with someone the inputs are debounced 300ms.
+
+When focusing an input, it will save on blur. 
+
+Sub-tasks will delete when the parent task is deleted. 
+
+Users are notified as soon as the assignee input is filled.
+
 ### Optimizations 
 
 Currently the data is not paginated.
