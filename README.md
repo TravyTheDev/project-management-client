@@ -1,19 +1,32 @@
-# README
+# Project Management
 
-## About
+Users can login to a desktop application, create a project and sub-tasks, assign users, edit, and leave private notes for themselves.
 
-This is the official Wails Vue-TS template.
+Users get notifications in real time about assignment and can live edit with other desktop users.
 
-You can configure the project by editing `wails.json`. More information about the project settings can be found
-here: https://wails.io/docs/reference/project-config
+Manage projects on a gantt chart.
 
-## Live Development
+![](https://raw.githubusercontent.com/TravyTheDev/personal-site/refs/heads/main/public/images/live-edit.gif)
 
-To run in live development mode, run `wails dev` in the project directory. This will run a Vite development
-server that will provide very fast hot reload of your frontend changes. If you want to develop in a browser
-and have access to your Go methods, there is also a dev server that runs on http://localhost:34115. Connect
-to this in your browser, and you can call your Go code from devtools.
+This is a desktop application made with Wails, Go and TypeScript(Vue).
+It connects to a Go server https://github.com/TravyTheDev/personal-site-server which has a Sqlite database.
 
-## Building
+This started because I was wondering if it was possible to do access/refresh token auth on the desktop and it just got out of hand.
 
-To build a redistributable, production mode package, use `wails build`.
+### Optimizations 
+
+Currently the data is not paginated.
+
+I want to rewrite the gantt chart from scratch and not use a library mostly because I want floating labels on scroll.
+
+When you logout it does a janky reboot because I'm using a library for the server sent events stream so I want to rewrite it myself so I can easily unsubscribe.
+
+i18n.
+
+### Lessons learned
+
+Server to server websockets. 
+
+Golang cookie jar and server to server requests.
+
+You really are spoiled using an actual browser with it's nice APIs. 
