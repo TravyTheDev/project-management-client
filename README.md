@@ -6,6 +6,7 @@ Users get notifications in real time about assignment and can live edit with oth
 
 Manage projects on a gantt chart.
 
+https://traviskleckley.com/project_management/
 ![](https://raw.githubusercontent.com/TravyTheDev/personal-site/refs/heads/main/public/images/live-edit.gif)
 
 This is a desktop application made with Wails, Go and TypeScript(Vue).
