@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import VueApexCharts from 'vue3-apexcharts'
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { todoStatus } from '../consts';
 import { types } from '../../wailsjs/go/models';
 
