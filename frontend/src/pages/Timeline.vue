@@ -11,7 +11,6 @@ import { types } from '../../wailsjs/go/models';
 import TimelineContainer from '../components/TimelineContainer.vue';
 
 const projectsData = ref<types.Project[]>([])
-const dataCharts = ref()
 
 const getProjects = async () => {
   const res = await GetAllProjects()

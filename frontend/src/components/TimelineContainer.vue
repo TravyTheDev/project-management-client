@@ -15,7 +15,6 @@ interface props {
 }
 
 const props = defineProps<props>()
-const chartRef = ref()
 
 const data = computed(() => {
     return {
@@ -29,7 +28,9 @@ const data = computed(() => {
 
 })
 const chartOptions = computed(() => {
-    const height = props.chartData ? (props.chartData?.length * 75) + 'px' : 0
+    const height = props.chartData ?
+        (props.chartData.length > 1 ? (props.chartData.length * 75) + 'px' : '125px') :
+        0
     return {
         chart: {
             height: height,
