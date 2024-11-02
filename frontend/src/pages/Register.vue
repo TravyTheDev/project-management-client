@@ -1,25 +1,25 @@
 <template>
     <div class="h-screen flex flex-col text-fontColor">
-        <div class="m-auto">
+        <div class="mx-auto mt-16">
             <div>
                 <p>{{t('auth.username')}}: </p>
-                <input class="border text-black" v-model="username" type="text">
+                <input class="border text-black" v-model="registerUser.username" type="text">
             </div>
             <div>
                 <p>{{t('auth.email')}}: </p>
-                <input class="border text-black" v-model="email" type="text">
-            </div>
-            <div class="last-name">
-                <p>last name: </p>
-                <input class="border text-black" v-model="lastName" type="text">
+                <input class="border text-black" v-model="registerUser.email" type="text">
             </div>
             <div>
                 <p>{{t('auth.password')}}: </p>
-                <input class="border text-black" v-model="password" type="password">
+                <input class="border text-black" v-model="registerUser.password" type="password">
             </div>
             <div>
                 <p>{{t('auth.confirm_password')}}: </p>
-                <input class="border text-black" v-model="passwordConfirm" type="password">
+                <input class="border text-black" v-model="registerUser.passwordConfirm" type="password">
+            </div>
+            <div class="flex items-center gap-2">
+                <p>{{ t('auth.is_admin') }}:</p>
+                <input v-model="registerUser.isAdmin" type="checkbox">
             </div>
             <button class="bg-myMessage px-2 py-1 rounded-lg hover:border border-slate-400 mt-2" @click="register">
                 {{t('auth.register')}}
@@ -30,21 +30,40 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { Register } from '../../wailsjs/go/main/App';
+import { types } from '../../wailsjs/go/models';
 
 const {t} = useI18n()
 
-const email = ref('')
-const username = ref('')
-const password = ref('')
-const passwordConfirm = ref('')
-const lastName = ref('')
+const defaults: types.RegisterReq = {
+    email: '',
+    username: '',
+    password: '',
+    passwordConfirm: '',
+    isAdmin: false,
+}
+
+const registerUser = <types.RegisterReq>reactive({
+    email: '',
+    username: '',
+    password: '',
+    passwordConfirm: '',
+    isAdmin: false,
+})
+
 const isShowError = ref(false)
 const errorValue = ref('')
 
-const register = () => {
-    
+const register = async () => {
+    try {
+        await Register(registerUser)
+        Object.assign(registerUser, defaults)
+    } catch (error: any) {
+        isShowError.value = true
+        errorValue.value = error
+    }
 }
 </script>
 

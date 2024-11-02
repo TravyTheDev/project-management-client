@@ -16,6 +16,8 @@ export function Logout():Promise<void>;
 
 export function ReadSocketMessage():Promise<void>;
 
+export function Register(arg1:types.RegisterReq):Promise<void>;
+
 export function SendNotification(arg1:number,arg2:types.Notification):Promise<void>;
 
 export function WriteSocketMessage(arg1:types.SocketMessage):Promise<void>;

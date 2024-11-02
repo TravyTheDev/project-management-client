@@ -30,6 +30,10 @@ export function ReadSocketMessage() {
   return window['go']['main']['App']['ReadSocketMessage']();
 }
 
+export function Register(arg1) {
+  return window['go']['main']['App']['Register'](arg1);
+}
+
 export function SendNotification(arg1, arg2) {
   return window['go']['main']['App']['SendNotification'](arg1, arg2);
 }

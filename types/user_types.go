@@ -4,6 +4,7 @@ type User struct {
 	ID       int    `json:"id"`
 	Username string `json:"username"`
 	Email    string `json:"email"`
+	IsAdmin  bool   `json:"isAdmin"`
 }
 
 type UserSlice struct {
@@ -20,6 +21,7 @@ type RegisterReq struct {
 	Email           string `json:"email"`
 	Password        string `json:"password"`
 	PasswordConfirm string `json:"passwordConfirm"`
+	IsAdmin         bool   `json:"isAdmin"`
 }
 
 type Notification struct {

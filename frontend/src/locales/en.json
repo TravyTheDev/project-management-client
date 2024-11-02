@@ -19,7 +19,8 @@
         "login": "login",
         "email_numbers": "Enter the numbers from the email.",
         "forgot_password": "forgot your password?",
-        "send_email": "send"
+        "send_email": "send",
+        "is_admin": "admin user"
     },
     "navbar": {
         "home": "home",

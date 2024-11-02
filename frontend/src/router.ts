@@ -5,6 +5,7 @@ import Login from './pages/Login.vue'
 import Timeline from './pages/Timeline.vue'
 import Urgency from './pages/Urgency.vue'
 import Project from './pages/Project.vue'
+import Register from './pages/Register.vue'
 import Layout from './components/Layout.vue'
 
 
@@ -33,6 +34,10 @@ const routes = [
       {
         path: '/project/:id',
         component: Project,
+      },
+      {
+        path: '/register',
+        component: Register,
       },
     ],
   },

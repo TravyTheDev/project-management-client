@@ -19,13 +19,11 @@ const loadUser = async () => {
 provide("loginUser", loginUser)
 const colorTheme = ref("light")
 //TODO SETTINGS DB TABLE
-//TODO SEARCH PROJECTS
-//TODO NOTIFICATIONS
 document.body.classList.add(colorTheme.value)
 onMounted(() => {
   loadUser()
 })
-// const getItemKey = (item: any) => item;
+
 </script>
 
 <template>

@@ -49,6 +49,9 @@
                 <div>
                     <button class="hover:bg-slate-300" @click="toggleCreateProjectModal">New Project</button>
                 </div>
+                <div v-if="loginUser?.isAdmin">
+                    <button class="hover:bg-slate-300" @click="goToRegister">Add User</button>
+                </div>
                 <div>
                     <button class="hover:bg-slate-300" @click="logout">Logout</button>
                 </div>
@@ -59,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
+import { inject, nextTick, onMounted, onUnmounted, Ref, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { EventsOff, EventsOn } from '../../wailsjs/runtime/runtime';
 import { useRouter } from 'vue-router';
@@ -75,6 +78,7 @@ const { t } = useI18n()
 const { locale } = useI18n()
 const router = useRouter()
 
+const loginUser = inject<Ref<types.User | undefined>>("loginUser")
 const selectedLanguage = ref("en")
 const messageData = ref<types.Notification[]>([])
 const colorTheme = ref("light")
@@ -132,6 +136,10 @@ const logout = async () => {
     nextTick(() => {
         router.push('/login')
     })
+}
+
+const goToRegister = () => {
+    router.push('/register')
 }
 
 const showNotifications = () => {

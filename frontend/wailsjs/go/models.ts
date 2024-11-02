@@ -100,6 +100,7 @@ export namespace types {
 	    id: number;
 	    username: string;
 	    email: string;
+	    isAdmin: boolean;
 	
 	    static createFrom(source: any = {}) {
 	        return new User(source);
@@ -110,6 +111,7 @@ export namespace types {
 	        this.id = source["id"];
 	        this.username = source["username"];
 	        this.email = source["email"];
+	        this.isAdmin = source["isAdmin"];
 	    }
 	}
 	export class ProjectRes {
@@ -143,6 +145,26 @@ export namespace types {
 		    }
 		    return a;
 		}
+	}
+	export class RegisterReq {
+	    username: string;
+	    email: string;
+	    password: string;
+	    passwordConfirm: string;
+	    isAdmin: boolean;
+	
+	    static createFrom(source: any = {}) {
+	        return new RegisterReq(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.username = source["username"];
+	        this.email = source["email"];
+	        this.password = source["password"];
+	        this.passwordConfirm = source["passwordConfirm"];
+	        this.isAdmin = source["isAdmin"];
+	    }
 	}
 	export class SearchReq {
 	    text: string;

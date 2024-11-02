@@ -110,6 +110,22 @@ func (a *App) Logout() {
 	RestartSelf()
 }
 
+func (a *App) Register(registerReq types.RegisterReq) {
+	payload, err := json.Marshal(registerReq)
+	if err != nil {
+		fmt.Println(err)
+	}
+	req, err := http.NewRequest("POST", "http://localhost:8000/api/v1/register/en", bytes.NewReader(payload))
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	_, err = httpClient.Do(req)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
 func (a *App) CreateWebSocketRoom(roomID int) {
 	encodeBody, err := json.Marshal(roomID)
 	if err != nil {
